@@ -11,12 +11,12 @@ _core:
 id: stark_messages
 theme: stark
 region: sidebar_first
-weight: null
+weight: 0
 provider: null
 plugin: system_messages_block
 settings:
   id: system_messages_block
-  label: 'Status messages'
+  label: Tilaviestit
   label_display: '0'
   provider: system
 visibility: {  }

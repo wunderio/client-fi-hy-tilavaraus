@@ -11,12 +11,12 @@ _core:
 id: stark_branding
 theme: stark
 region: sidebar_first
-weight: null
+weight: 0
 provider: null
 plugin: system_branding_block
 settings:
   id: system_branding_block
-  label: 'Site branding'
+  label: 'Sivuston brändäys'
   label_display: '0'
   provider: system
   use_site_logo: true

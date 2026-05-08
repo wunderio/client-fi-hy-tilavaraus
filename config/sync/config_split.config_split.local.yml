@@ -6,20 +6,21 @@ id: local
 label: Local
 description: ''
 weight: 0
+stackable: false
+no_patching: false
+storage: folder
 folder: ../conf/config_split/local
 module:
   devel: 0
   devel_php: 0
   stage_file_proxy: 0
 theme: {  }
-blacklist:
+complete_list:
   - uhsg_service_provider_details.settings
   - google_tag.settings
   - redirect.settings
   - redirect_404.settings
-graylist:
+partial_list:
   - 'devel.*'
   - system.site.name
   - 'system.site.page.*'
-graylist_dependents: true
-graylist_skip_equal: true
