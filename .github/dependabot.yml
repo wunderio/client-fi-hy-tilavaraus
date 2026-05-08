@@ -1,13 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: composer
-    directory: "/drupal"
+    directory: "/"
     schedule:
       interval: daily
       time: "03:00"
     open-pull-requests-limit: 10
   - package-ecosystem: npm
-    directory: "/drupal/web/themes/custom/uh_space"
+    directory: "/web/themes/custom/uh_space"
     schedule:
       interval: daily
       time: "03:00"

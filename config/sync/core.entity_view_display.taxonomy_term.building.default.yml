@@ -1,0 +1,309 @@
+uuid: cda4a191-f989-47d0-ba1f-69b6f142a46e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.building.field_building_id
+    - field.field.taxonomy_term.building.field_campus
+    - field.field.taxonomy_term.building.field_city
+    - field.field.taxonomy_term.building.field_contact_details
+    - field.field.taxonomy_term.building.field_contacts
+    - field.field.taxonomy_term.building.field_equipment_information
+    - field.field.taxonomy_term.building.field_geolocation_address
+    - field.field.taxonomy_term.building.field_images
+    - field.field.taxonomy_term.building.field_location_map
+    - field.field.taxonomy_term.building.field_navigation_link
+    - field.field.taxonomy_term.building.field_opening_times
+    - field.field.taxonomy_term.building.field_street_address
+    - responsive_image.styles.hero_image
+    - taxonomy.vocabulary.building
+  module:
+    - ds
+    - ds_chains
+    - field_group
+    - leaflet
+    - responsive_image
+    - text
+third_party_settings:
+  ds:
+    layout:
+      id: ds_2col_stacked_fluid
+      library: ds/ds_2col_stacked_fluid
+      disable_css: false
+      entity_classes: all_classes
+      settings:
+        classes:
+          layout_class: {  }
+          header: {  }
+          left: {  }
+          right: {  }
+          footer: {  }
+        wrappers:
+          header: div
+          left: div
+          right: div
+          footer: div
+        outer_wrapper: div
+        attributes: ''
+        link_attribute: ''
+        link_custom: ''
+        label: ''
+    regions:
+      header:
+        - taxonomy_term_title
+        - field_images
+      left:
+        - description
+        - 'dynamic_block_field:taxonomy_term-building_spaces_view'
+      right:
+        - 'dynamic_token_field:taxonomy_term-building_address'
+        - group_building_info
+        - group_opening_hours
+        - field_contacts
+        - field_location_map
+        - field_opening_times
+        - group_contacts
+        - field_contact_details
+    fields:
+      'dynamic_token_field:taxonomy_term-building_address':
+        plugin_id: 'dynamic_token_field:taxonomy_term-building_address'
+        weight: 4
+        label: hidden
+        formatter: default
+      'dynamic_block_field:taxonomy_term-building_spaces_view':
+        plugin_id: 'dynamic_block_field:taxonomy_term-building_spaces_view'
+        weight: 3
+        label: above
+        formatter: default
+        ft:
+          id: expert
+          settings:
+            lb: ''
+            lbw: true
+            lbw-el: ''
+            lbw-cl: visually-hidden
+            lbw-at: ''
+            lb-col: false
+            ow: false
+            ow-el: ''
+            ow-cl: ''
+            ow-at: ''
+            ow-def-at: false
+            ow-def-cl: false
+            fis: false
+            fis-el: ''
+            fis-cl: ''
+            fis-at: ''
+            fis-def-at: false
+            fi: false
+            fi-el: ''
+            fi-cl: ''
+            fi-at: ''
+            fi-def-at: false
+            prefix: ''
+            suffix: ''
+      taxonomy_term_title:
+        plugin_id: taxonomy_term_title
+        weight: 0
+        label: hidden
+        formatter: default
+        settings:
+          link: false
+          wrapper: h1
+          class: page__title
+        ft:
+          id: reset
+          settings:
+            lb: ''
+  ds_chains:
+    fields: {  }
+  field_group:
+    group_contacts:
+      children:
+        - field_contacts
+        - field_contact_details
+      label: Contacts
+      parent_name: group_building_info
+      region: right
+      weight: 7
+      format_type: html_element
+      format_settings:
+        classes: building__contacts
+        id: ''
+        element: div
+        show_label: true
+        label_element: h3
+        attributes: ''
+        effect: none
+        speed: fast
+    group_building_info:
+      children:
+        - 'dynamic_token_field:taxonomy_term-building_address'
+        - group_opening_hours
+        - field_location_map
+        - group_contacts
+      label: 'Building Info'
+      parent_name: ''
+      region: right
+      weight: 4
+      format_type: html_element
+      format_settings:
+        classes: building__info
+        id: ''
+        element: div
+        show_label: true
+        label_element: h2
+        attributes: ''
+        effect: none
+        speed: fast
+    group_opening_hours:
+      children:
+        - field_opening_times
+      label: 'Opening Hours'
+      parent_name: group_building_info
+      region: right
+      weight: 5
+      format_type: html_element
+      format_settings:
+        classes: 'building__opening-hours field-group--label-visually_hidden'
+        id: ''
+        element: div
+        show_label: true
+        label_element: h3
+        attributes: ''
+        effect: none
+        speed: fast
+id: taxonomy_term.building.default
+targetEntityType: taxonomy_term
+bundle: building
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: left
+  field_contact_details:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: right
+  field_contacts:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: liftup
+      link: false
+    third_party_settings:
+      ds:
+        ds_limit: ''
+        ft:
+          id: reset
+          settings:
+            lb: ''
+    weight: 6
+    region: right
+  field_images:
+    type: responsive_image
+    label: hidden
+    settings:
+      responsive_image_style: hero_image
+      image_link: ''
+      image_loading:
+        attribute: eager
+    third_party_settings:
+      ds:
+        ds_limit: '1'
+    weight: 1
+    region: header
+  field_location_map:
+    type: leaflet_formatter_default
+    label: visually_hidden
+    settings:
+      multiple_map: false
+      leaflet_map: 'OSM Mapnik'
+      height: 400
+      height_unit: px
+      hide_empty_map: true
+      disable_wheel: true
+      gesture_handling: false
+      reset_map:
+        control: false
+        position: topright
+      popup: false
+      popup_content: ''
+      map_position:
+        force: false
+        zoom: 12
+        minZoom: 1
+        maxZoom: 18
+      icon:
+        iconUrl: ''
+        shadowUrl: ''
+        iconSize:
+          x: ''
+          'y': ''
+        iconAnchor:
+          x: ''
+          'y': ''
+        shadowSize:
+          x: ''
+          'y': ''
+        shadowAnchor:
+          x: ''
+          'y': ''
+        popupAnchor:
+          x: ''
+          'y': ''
+      leaflet_markercluster:
+        control: false
+        options: '{"spiderfyOnMaxZoom":true,"showCoverageOnHover":true,"removeOutsideVisibleBounds": false}'
+      path: '{"color":"#3388ff","opacity":"1.0","stroke":true,"weight":3,"fill":"depends","fillColor":"*","fillOpacity":"0.2"}'
+      geocoder:
+        control: false
+        settings:
+          position: topright
+          input_size: 25
+          providers: {  }
+          min_terms: 4
+          delay: 800
+          zoom: 16
+          popup: false
+          options: ''
+      fullscreen_control: true
+    third_party_settings:
+      ds:
+        ft:
+          id: minimal
+          settings:
+            lb: ''
+            lb-col: false
+            classes: {  }
+    weight: 6
+    region: right
+  field_opening_times:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings:
+      ds:
+        ft:
+          id: reset
+          settings:
+            lb: ''
+    weight: 6
+    region: right
+hidden:
+  field_building_id: true
+  field_campus: true
+  field_city: true
+  field_equipment_information: true
+  field_geolocation_address: true
+  field_navigation_link: true
+  field_street_address: true
+  langcode: true
+  search_api_excerpt: true
