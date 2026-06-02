@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Idea & basic source for this JSON parser extension came from:
  *  http://agileadam.com/2017/09/extending-the-migrate-plus-json-parser-in-drupal-8/
@@ -7,16 +9,17 @@
 
 namespace Drupal\migrate_optime_json\Plugin\migrate_plus\data_parser;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\migrate_plus\Attribute\DataParser;
 use Drupal\migrate_plus\Plugin\migrate_plus\data_parser\Json;
 
 /**
  * Obtain JSON data for migration.
- *
- * @DataParser(
- *   id = "json_mymodule",
- *   title = @Translation("JSON Parser for My Module")
- * )
  */
+#[DataParser(
+  id: 'json_mymodule',
+  title: new TranslatableMarkup('JSON Parser for My Module')
+)]
 class OptimeJson extends Json {
 
   /**
@@ -30,7 +33,7 @@ class OptimeJson extends Json {
    *
    * @throws \GuzzleHttp\Exception\RequestException
    */
-  protected function getSourceData($url) {
+  protected function getSourceData(string $url, string|int $item_selector = ''): array {
     $response = $this->getDataFetcherPlugin()->getResponseContent($url);
 
     // Convert objects to associative arrays.
@@ -38,27 +41,34 @@ class OptimeJson extends Json {
 
     // If json_decode() has returned NULL, it might be that the data isn't
     // valid utf8 - see http://php.net/manual/en/function.json-decode.php#86997.
-    if (is_null($source_data)) {
-      $utf8response = utf8_encode($response);
-      $source_data = json_decode($utf8response);
+    if ($source_data === NULL) {
+      $utf8response = mb_convert_encoding($response, 'UTF-8');
+      $source_data = json_decode($utf8response, TRUE);
     }
 
-    if ($this->itemSelector === 0) {
-      // Don't bother with selectByDepth (it's expensive, and we already
-      // have the top-level data as desired).
+    if (!is_array($source_data)) {
+      return [];
     }
-    elseif (is_int($this->itemSelector)) {
+
+    if (is_numeric($item_selector)) {
       // Backwards-compatibility for depth selection.
-      $source_data = $this->selectByDepth($source_data);
+      $source_data = $this->selectByDepth($source_data, (int) $item_selector);
     }
-    else {
+    elseif ($item_selector !== 0 && $item_selector !== '') {
       // Otherwise, we're using xpath-like selectors.
-      $selectors = explode('/', trim($this->itemSelector, '/'));
+      $selectors = explode('/', trim((string) $item_selector, '/'));
       foreach ($selectors as $selector) {
         if (!empty($selector)) {
+          if (!is_array($source_data) || !array_key_exists($selector, $source_data)) {
+            return [];
+          }
           $source_data = $source_data[$selector];
         }
       }
+    }
+
+    if (!is_array($source_data)) {
+      return [];
     }
 
     $modified_data = $this->prepareRows($source_data);

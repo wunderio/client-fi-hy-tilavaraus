@@ -87,6 +87,7 @@ permissions:
   - 'edit terms in price_categories'
   - 'edit terms in room_type'
   - 'link to any page'
+  - 'rebuild node access permissions'
   - 'revert all revisions'
   - 'revert space revisions'
   - 'translate accessibility taxonomy_term'

@@ -147,6 +147,8 @@ function migrate_optime_json_legacy_redirect($entity) {
     return;
   }
 
+  $redirect_repository = \Drupal::service('redirect.repository');
+
   if (empty($entity->get('field_legacy_url')->uri)) {
     return;
   }
@@ -171,7 +173,7 @@ function migrate_optime_json_legacy_redirect($entity) {
     $target_path = "node/" . $entity->id();
   }
 
-  if (!redirect_repository()->findMatchingRedirect($source_path, [], $langcode)) {
+  if (!$redirect_repository->findMatchingRedirect($source_path, [], $langcode)) {
     $redirect = Redirect::create();
     $redirect->setSource($source_path);
     // Need to add langcode here too to avoid problems.
@@ -186,7 +188,7 @@ function migrate_optime_json_legacy_redirect($entity) {
 
   // Set another redirect for english ('en'), to avoid some problems related to main language setting.
   // This is basically a auto-redirect from enlish to finnish version.
-  if (!redirect_repository()->findMatchingRedirect($source_path, [], 'en')) {
+  if (!$redirect_repository->findMatchingRedirect($source_path, [], 'en')) {
     $redirect = Redirect::create();
     $redirect->setSource($source_path);
     $redirect->setRedirect('/' . $langcode . $target_path);

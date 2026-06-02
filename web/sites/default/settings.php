@@ -48,7 +48,7 @@ if (!empty($_SERVER['SERVER_ADDR'])) {
 }
 
 // Disallow configuration changes via UI by default.
-$settings['config_readonly'] = TRUE;
+$settings['config_readonly'] = FALSE;
 
 // Some configurations changes we want to allow like menu items and
 // configurations that are intentionally ignored with config_ignore.

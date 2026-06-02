@@ -12,6 +12,7 @@ select2:
     base:
       lib/selectWoo/dist/css/selectWoo.min.css: {}
   js:
+    js/jquery4-compat.js: {}
     lib/selectWoo/dist/js/selectWoo.min.js: {}
   dependencies:
     - core/jquery

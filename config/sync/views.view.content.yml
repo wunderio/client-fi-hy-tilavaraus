@@ -11,7 +11,7 @@ _core:
 id: content
 label: Sisältö
 module: node
-description: 'Find and manage content.'
+description: 'Etsi ja ylläpidä sisältöä.'
 tag: default
 base_table: node_field_data
 base_field: nid
@@ -70,7 +70,7 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: field
-          label: 'Content type'
+          label: Sisältötyyppi
           exclude: false
           alter:
             alter_text: false
@@ -239,7 +239,7 @@ display:
           entity_type: node
           entity_field: changed
           plugin_id: field
-          label: Updated
+          label: Päivitetty
           exclude: false
           alter:
             alter_text: false
@@ -322,6 +322,7 @@ display:
             previous: '‹ Edellinen'
             first: '« Ensimmäinen'
             last: 'Viimeinen »'
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -377,8 +378,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -407,7 +406,7 @@ display:
           exposed: true
           expose:
             operator_id: type_op
-            label: 'Content type'
+            label: Sisältötyyppi
             description: ''
             use_operator: false
             operator: type_op
@@ -419,8 +418,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -510,8 +507,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -634,6 +629,7 @@ display:
           empty_table: true
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
       query:
@@ -1006,8 +1002,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1048,8 +1042,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1139,8 +1131,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1234,7 +1224,6 @@ display:
               authenticated: authenticated
               admin: admin
               editor: editor
-              anonymous: '0'
           is_grouped: false
           group_info:
             label: ''
