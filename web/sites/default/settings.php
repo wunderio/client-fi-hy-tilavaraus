@@ -74,13 +74,12 @@ if (PHP_SAPI === 'cli') {
 // Be sure to have config_split.local disabled by default.
 $config['config_split.config_split.local']['status'] = FALSE;
 
-$env = getenv('WKV_SITE_ENV');
+// Environment-specific settings.
+$env = getenv('ENVIRONMENT_NAME');
 global $base_url;
 
 switch ($env) {
-  case 'prod':
-
-
+  case 'production':
     // Warden settings.
     // Shared secret between the site and Warden server.
     $config['warden.settings']['warden_token'] = getenv('WARDEN_TOKEN');
@@ -124,27 +123,17 @@ switch ($env) {
     $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-staging.it.helsinki.fi';
     break;
 
+  case 'ddev':
   case 'local':
     $settings['simple_environment_indicator'] = '#88b700 Local';
-    $base_url = "https://local.tilat.fi";
+    $base_url = "https://client-fi-hy-tilavaraus.ddev.site";
     // Disable config_readonly on local.
     $settings['config_readonly'] = FALSE;
     // Enable config_split.dev on local.
     $config['config_split.config_split.local']['status'] = TRUE;
     // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://local.tilat.fi';
-    break;
-
-  case 'lando':
-    $settings['simple_environment_indicator'] = '#88b700 Local';
-    $base_url = "https://tilat.lndo.site";
-    // Disable config_readonly on local.
-    $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on local.
-    $config['config_split.config_split.local']['status'] = TRUE;
-    // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://tilat.lndo.site';
-    $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://tilat.lndo.site/modules/custom/migrate_optime_json/data/locations11_example.json';
+    $config['simple_sitemap.settings']['base_url'] = 'https://client-fi-hy-tilavaraus.ddev.site';
+    $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://client-fi-hy-tilavaraus.ddev.site/modules/custom/migrate_optime_json/data/locations11_example.json';
     break;
 }
 
@@ -192,7 +181,7 @@ $settings['container_yamls'][] = __DIR__ . '/services.yml';
 // Fix warning on Drupal status page.
 $settings['trusted_host_patterns'] = [
   '^local\.tilat\.fi$',
-  '^tilat\.lndo\.site$',
+  '^tilat\.ddev\.site$',
   '^.*\.helsinki\.fi$',
   '^127\.0\.0\.1$',
 ];
@@ -216,4 +205,10 @@ $settings['config_exclude_modules'] = ['devel', 'stage_file_proxy'];
 $ddev_settings = __DIR__ . '/settings.ddev.php';
 if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
   require $ddev_settings;
+}
+
+// Silta cluster configuration overrides.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
+if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
+  include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }
