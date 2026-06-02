@@ -10,11 +10,11 @@
  */
 $databases = [];
 $databases['default']['default'] = [
-  'database' => getenv('DB_NAME_DRUPAL'),
-  'username' => getenv('DB_USER_DRUPAL'),
-  'password' => getenv('DB_PASS_DRUPAL'),
+  'database' => getenv('DB_NAME'),
+  'username' => getenv('DB_USER'),
+  'password' => getenv('DB_PASS'),
   'prefix' => '',
-  'host' => getenv('DB_HOST_DRUPAL'),
+  'host' => getenv('DB_HOST'),
   'port' => '3306',
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
