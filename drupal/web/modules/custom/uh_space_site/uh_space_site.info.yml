@@ -1,5 +1,0 @@
-name: 'uh_space_site'
-type: module
-description: 'Various extra functionality for the UH Spaces site.'
-core_version_requirement: ^9 || ^10
-package: 'Custom'

@@ -1,0 +1,19 @@
+global:
+  version: 0.1.x
+  css:
+    base:
+      dist/app.css: {}
+  js:
+    dist/app.js: {}
+
+select2:
+  version: 1.0.1
+  css:
+    base:
+      lib/selectWoo/dist/css/selectWoo.min.css: {}
+  js:
+    js/jquery4-compat.js: {}
+    lib/selectWoo/dist/js/selectWoo.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once

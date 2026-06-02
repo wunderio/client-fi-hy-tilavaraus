@@ -1,0 +1,32 @@
+uuid: 1fd1f93a-7ef6-4c25-9e11-8e4ed16302cd
+langcode: fi
+status: false
+dependencies:
+  config:
+    - system.menu.tools
+  module:
+    - menu_multilingual
+    - system
+  theme:
+    - stark
+third_party_settings:
+  menu_multilingual:
+    only_translated_labels: false
+    only_translated_content: false
+_core:
+  default_config_hash: xCOijLdB1-UgXxQ9a0D1_pd8vxNEhfMnxXZc8jYhHjs
+id: stark_tools
+theme: stark
+region: sidebar_first
+weight: 0
+provider: null
+plugin: 'system_menu_block:tools'
+settings:
+  id: 'system_menu_block:tools'
+  label: Työkalut
+  label_display: visible
+  provider: system
+  level: 1
+  depth: null
+  expand_all_items: false
+visibility: {  }
