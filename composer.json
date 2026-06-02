@@ -1,0 +1,137 @@
+{
+    "name": "uh/tilat",
+    "description": "HY-Tilat Composer file",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "authors": [{"name": "", "role": ""}],
+    "repositories": [{"type": "composer", "url": "https://packages.drupal.org/8"}],
+    "require": {
+        "composer/installers": "^2.0",
+        "cweagans/composer-patches": "^1.6",
+        "drupal/admin_toolbar": "^3.0",
+        "drupal/config_filter": "^2.7",
+        "drupal/config_ignore": "^3.0@beta",
+        "drupal/config_readonly": "^1.0",
+        "drupal/config_split": "^2.0",
+        "drupal/cookieconsent": "^1.4",
+        "drupal/core-composer-scaffold": "^11",
+        "drupal/core-recommended": "^11",
+        "drupal/ctools": "^4.1",
+        "drupal/disable_field": "^3.0",
+        "drupal/ds": "^3.13",
+        "drupal/ds_chains": "^1.0@alpha",
+        "drupal/easy_breadcrumb": "^2.0",
+        "drupal/field_group": "^4.0",
+        "drupal/field_group_link": "^3.0@RC",
+        "drupal/geofield": "^10.3",
+        "drupal/geofield_map": "^11.1",
+        "drupal/google_tag": "^2.0",
+        "drupal/leaflet": "^10.2",
+        "drupal/menu_multilingual": "^2.0",
+        "drupal/migrate_plus": "^6.0",
+        "drupal/migrate_tools": "^6.0",
+        "drupal/pathauto": "^1.6",
+        "drupal/redirect": "^1.1",
+        "drupal/search_api": "^1.20",
+        "drupal/search_api_autocomplete": "^1.5",
+        "drupal/simple_sitemap": "^4.1",
+        "drupal/simplei": "^3.0",
+        "drupal/stable": "^2.0",
+        "drupal/tagify": "^1.2",
+        "drupal/token": "^1.6",
+        "drupal/translatable_menu_link_uri": "^2.1",
+        "drupal/translation_views": "^2.0@alpha",
+        "drupal/upgrade_status": "^4.0",
+        "drush/drush": "^13.7",
+        "mglaman/composer-drupal-lenient": "^1.0",
+        "webflo/drupal-finder": "^1.0.0",
+        "webmozart/path-util": "^2.3",
+        "wunderio/drupal-ping": "^2.0"
+    },
+    "require-dev": {
+        "drupal/devel": "^5.0",
+        "drupal/devel_php": "^1.0",
+        "drupal/stage_file_proxy": "^3.1"
+    },
+    "conflict": {"drupal/drupal": "*"},
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {"classmap": ["scripts/composer/ScriptHandler.php"]},
+    "scripts": {
+        "pre-install-cmd": ["DrupalProject\\composer\\ScriptHandler::checkComposerVersion"],
+        "pre-update-cmd": ["DrupalProject\\composer\\ScriptHandler::checkComposerVersion"],
+        "post-install-cmd": ["DrupalProject\\composer\\ScriptHandler::createRequiredFiles"],
+        "post-update-cmd": ["DrupalProject\\composer\\ScriptHandler::createRequiredFiles"]
+    },
+    "extra": {
+        "config": {"sort-packages": true},
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "./web"
+            },
+            "file-mapping": {
+                "[web-root]/.csslintrc": false,
+                "[web-root]/.eslintignore": false,
+                "[web-root]/.eslintrc.json": false,
+                "[web-root]/example.gitignore": false,
+                "[web-root]/INSTALL.txt": false,
+                "[web-root]/README.md": false,
+                "[web-root]/README.txt": false,
+                "[web-root]/update.php": false,
+                "[web-root]/web.config": false,
+                "[web-root]/sites/example.settings.local.php": false,
+                "[web-root]/sites/example.sites.php": false,
+                "[web-root]/sites/default/default.services.yml": false,
+                "[web-root]/sites/default/default.settings.php": false,
+                "[web-root]/modules/README.txt": false,
+                "[web-root]/profiles/README.txt": false,
+                "[web-root]/themes/README.txt": false,
+                "[web-root]/sites/README.txt": false
+            }
+        },
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/contrib/{$name}": ["type:drupal-drush"]
+        },
+        "composer-exit-on-patch-failure": true,
+        "dropin-paths": {
+            "web/": [
+                "type:web-dropin",
+                "package:wunderio/drupal-ping:_ping.php"
+            ]
+        },
+        "patches": {
+            "drupal/core": {
+                "Referenced entity rendered in wrong language when parent entity does not have translation enabled - #2859202": "https://www.drupal.org/files/issues/2025-10-06/2859202-42.patch",
+                "Cannot assign null to property Drupal\\views\\Plugin\\views\\query\\QueryPluginBase::$offset of type int #3361177": "https://www.drupal.org/files/issues/2023-05-25/3361177-1.patch"
+            },
+            "drupal/ds_chains": {
+                "The chained entity is not loaded in the hosts entity language - #3295444": "https://www.drupal.org/files/issues/2022-07-12/load-the-chained-entity-translation-if-available.patch"
+            },
+            "drupal/cookieconsent": {
+                "D10 patch - #3286783": "https://www.drupal.org/files/issues/2022-06-15/cookieconsent.1.x-dev.rector.patch"
+            }
+        },
+        "drupal-lenient": {
+            "allowed-list": ["drupal/cookieconsent"]
+        }
+    },
+    "config": {
+        "process-timeout": 0,
+        "platform": {
+            "php": "8.3"
+        },
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "koodimonni/composer-dropin-installer": true,
+            "drupal/core-composer-scaffold": true,
+            "mglaman/composer-drupal-lenient": true
+        }
+    }
+}

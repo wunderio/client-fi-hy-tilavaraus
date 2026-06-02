@@ -1,0 +1,13 @@
+uuid: fada8183-ad47-4145-b381-2b250cf7464b
+langcode: fi
+status: false
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: fVFfJv_GzBRE-wpRHbfD5a3VjnhbEOXG6lvRd3uaccY
+id: node.search_index
+label: 'Haun indeksi'
+description: ''
+targetEntityType: node
+cache: true

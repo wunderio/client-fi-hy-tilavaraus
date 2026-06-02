@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Contains migrate_optime_json.install.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function migrate_optime_json_uninstall() {
+  \Drupal::configFactory()
+    ->getEditable('migrate_plus.migration.optime_integration')
+    ->delete();
+}

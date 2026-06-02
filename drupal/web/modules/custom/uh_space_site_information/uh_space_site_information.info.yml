@@ -1,6 +1,0 @@
-name: 'Extended site information settings for this site'
-type: module
-description: 'Extends site information settings to include information about service provider and spaces details.'
-package: Student Guide
-core_version_requirement: ^9 || ^10
-version: VERSION

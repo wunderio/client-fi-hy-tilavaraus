@@ -1,8 +1,0 @@
-uuid: 089864a1-4ff9-474d-8132-c5a5b4c88465
-langcode: und
-status: true
-dependencies: {  }
-name: 'Price Categories'
-vid: price_categories
-description: 'Pricing categories of spaces.'
-weight: 0

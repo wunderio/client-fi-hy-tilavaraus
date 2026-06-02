@@ -1,0 +1,13 @@
+uuid: 29fe8e13-9c37-450f-bac0-b60fe4550aab
+langcode: fi
+status: false
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: ElrtInxGjZd7GaapJ5O9n-ugi2hG2IxFivtgn0tHOsk
+id: node.full
+label: 'Koko sisältö'
+description: ''
+targetEntityType: node
+cache: true
