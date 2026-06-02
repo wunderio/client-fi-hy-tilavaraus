@@ -37,6 +37,7 @@
         "drupal/simple_sitemap": "^4.1",
         "drupal/simplei": "^3.0",
         "drupal/stable": "^2.0",
+        "drupal/tagify": "^1.2",
         "drupal/token": "^1.6",
         "drupal/translatable_menu_link_uri": "^2.1",
         "drupal/translation_views": "^2.0@alpha",
