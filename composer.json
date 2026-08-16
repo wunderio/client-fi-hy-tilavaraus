@@ -106,7 +106,6 @@
         },
         "patches": {
             "drupal/core": {
-                "Referenced entity rendered in wrong language when parent entity does not have translation enabled - #2859202": "https://www.drupal.org/files/issues/2025-10-06/2859202-42.patch",
                 "Cannot assign null to property Drupal\\views\\Plugin\\views\\query\\QueryPluginBase::$offset of type int #3361177": "https://www.drupal.org/files/issues/2023-05-25/3361177-1.patch"
             },
             "drupal/ds_chains": {
@@ -129,9 +128,10 @@
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
-            "koodimonni/composer-dropin-installer": true,
             "drupal/core-composer-scaffold": true,
-            "mglaman/composer-drupal-lenient": true
+            "koodimonni/composer-dropin-installer": true,
+            "mglaman/composer-drupal-lenient": true,
+            "symfony/runtime": true
         }
     }
 }
