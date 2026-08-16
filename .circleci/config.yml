@@ -109,7 +109,7 @@ workflows:
       - silta/drupal-build:
           <<: *build
           name: build-prod
-          context: silta_finland
+          context: silta_prod_c_hy_tilavaraus
           requires:
             - validate
             - analyze
@@ -129,7 +129,7 @@ workflows:
 #                # SEC_DRUPAL_PROJECT_SILTA_FINLAND holds the secret key for decryption purposes.
 #                # This is stored in CircleCI as an environment variable and also in LastPass.
 #                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_FINLAND
-          context: silta_finland
+          context: silta_prod_c_hy_tilavaraus
           requires:
             - build-prod
           filters:
