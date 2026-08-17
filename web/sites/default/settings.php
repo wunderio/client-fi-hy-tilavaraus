@@ -71,8 +71,15 @@ if (PHP_SAPI === 'cli') {
   $settings['config_readonly'] = FALSE;
 }
 
+// Default config_split settings cover feature environments in Silta.
+// Production, main and local overrides are set in the switch below.
 // Be sure to have config_split.local disabled by default.
+$config['config_split.config_split.silta']['status'] = TRUE;
+$config['config_split.config_split.main']['status'] = FALSE;
 $config['config_split.config_split.local']['status'] = FALSE;
+
+// Fetch missing files from production on non-production environments.
+$config['stage_file_proxy.settings']['origin'] = 'https://tilavaraus.helsinki.fi';
 
 // Environment-specific settings.
 $env = getenv('ENVIRONMENT_NAME');
@@ -103,6 +110,14 @@ switch ($env) {
     $base_url = "https://tilavaraus.helsinki.fi";
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://tilavaraus.helsinki.fi';
+    // Do not enable stage_file_proxy on production.
+    $config['config_split.config_split.silta']['status'] = FALSE;
+    break;
+
+  case 'main':
+    $settings['simple_environment_indicator'] = '#004984 Main';
+    $config['config_split.config_split.main']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
   case 'dev':
@@ -110,8 +125,9 @@ switch ($env) {
     $base_url = "https://opetustila-test.it.helsinki.fi";
     // Disable config_readonly on dev.
     $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on dev.
+    // Enable local split (includes stage_file_proxy) on dev.
     $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-test.it.helsinki.fi';
     break;
@@ -129,8 +145,9 @@ switch ($env) {
     $base_url = "https://client-fi-hy-tilavaraus.ddev.site";
     // Disable config_readonly on local.
     $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on local.
+    // Enable local split on local.
     $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://client-fi-hy-tilavaraus.ddev.site';
     $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://client-fi-hy-tilavaraus.ddev.site/modules/custom/migrate_optime_json/data/locations11_example.json';
