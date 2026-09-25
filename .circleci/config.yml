@@ -63,7 +63,6 @@ workflows:
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
-                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev_upc_hy_tilavaraus
           requires:
             - build
@@ -91,7 +90,6 @@ workflows:
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
-                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           requires:
             - build-main
           filters:
@@ -121,7 +119,6 @@ workflows:
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-prod.yml
-                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_PROD
           context: silta_prod_c_hy_tilavaraus
           requires:
             - build-prod
