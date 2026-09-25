@@ -18,9 +18,6 @@ branch-filters:
         - production
         - main
         - /dependabot\/.*/
-        # Remove the following filters from actual project configuration.
-        - /^10\..*/
-        - /^11\..*/
 
 workflows:
   commit:
@@ -62,12 +59,10 @@ workflows:
       - silta/drupal-deploy: &deploy
           name: deploy
           executor: silta
-          silta_config: silta/silta.yml
+          silta_config: silta/silta.yml,silta/silta-dev.yml
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
-                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
-                # This is stored in CircleCI as an environment variable
                 secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev_upc_hy_tilavaraus
           requires:
@@ -92,7 +87,11 @@ workflows:
       - silta/drupal-deploy:
           <<: *deploy
           name: deploy-main
-          silta_config: silta/silta.yml,silta/silta-main.yml
+          silta_config: silta/silta.yml,silta/silta-dev.yml
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/secrets-dev.yml
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           requires:
             - build-main
           filters:
