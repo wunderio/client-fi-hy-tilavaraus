@@ -63,17 +63,13 @@ workflows:
           name: deploy
           executor: silta
           silta_config: silta/silta.yml
-#          pre-release:
-#            - silta/decrypt-files:
-#                files: silta/silta.secrets
-#                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
-#                # This is stored in CircleCI as an environment variable and also in LastPass.
-#                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/secrets-dev.yml
+                # SEC_DRUPAL_PROJECT_SILTA_DEV holds the secret key for decryption purposes.
+                # This is stored in CircleCI as an environment variable
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_DEV
           context: silta_dev_upc_hy_tilavaraus
-          # Make sure that `requires` is always set to override the default value in `main` and `production` build jobs.
-          # This is to avoid requiring the `approve-deployment` job which breaks the deployment.
-          # This is because the `main` and `production` environments are filtered out from the default `build` job.
-          # Use `requires: []` to override the default value when no other jobs are required.
           requires:
             - build
           filters:
@@ -123,12 +119,10 @@ workflows:
           <<: *deploy
           name: deploy-prod
           silta_config: silta/silta.yml,silta/silta-prod.yml
-#          pre-release:
-#            - silta/decrypt-files:
-#                files: silta/silta-prod.secrets
-#                # SEC_DRUPAL_PROJECT_SILTA_FINLAND holds the secret key for decryption purposes.
-#                # This is stored in CircleCI as an environment variable and also in LastPass.
-#                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_FINLAND
+          pre-release:
+            - silta/decrypt-files:
+                files: silta/secrets-prod.yml
+                secret_key_env: SEC_DRUPAL_PROJECT_SILTA_PROD
           context: silta_prod_c_hy_tilavaraus
           requires:
             - build-prod
