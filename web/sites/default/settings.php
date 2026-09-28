@@ -10,11 +10,11 @@
  */
 $databases = [];
 $databases['default']['default'] = [
-  'database' => getenv('DB_NAME_DRUPAL'),
-  'username' => getenv('DB_USER_DRUPAL'),
-  'password' => getenv('DB_PASS_DRUPAL'),
+  'database' => getenv('DB_NAME'),
+  'username' => getenv('DB_USER'),
+  'password' => getenv('DB_PASS'),
   'prefix' => '',
-  'host' => getenv('DB_HOST_DRUPAL'),
+  'host' => getenv('DB_HOST'),
   'port' => '3306',
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
@@ -71,16 +71,22 @@ if (PHP_SAPI === 'cli') {
   $settings['config_readonly'] = FALSE;
 }
 
+// Default config_split settings cover feature environments in Silta.
+// Production, main and local overrides are set in the switch below.
 // Be sure to have config_split.local disabled by default.
+$config['config_split.config_split.silta']['status'] = TRUE;
+$config['config_split.config_split.main']['status'] = FALSE;
 $config['config_split.config_split.local']['status'] = FALSE;
 
-$env = getenv('WKV_SITE_ENV');
+// Fetch missing files from production on non-production environments.
+$config['stage_file_proxy.settings']['origin'] = 'https://tilavaraus.helsinki.fi';
+
+// Environment-specific settings.
+$env = getenv('ENVIRONMENT_NAME');
 global $base_url;
 
 switch ($env) {
-  case 'prod':
-
-
+  case 'production':
     // Warden settings.
     // Shared secret between the site and Warden server.
     $config['warden.settings']['warden_token'] = getenv('WARDEN_TOKEN');
@@ -104,6 +110,14 @@ switch ($env) {
     $base_url = "https://tilavaraus.helsinki.fi";
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://tilavaraus.helsinki.fi';
+    // Do not enable stage_file_proxy on production.
+    $config['config_split.config_split.silta']['status'] = FALSE;
+    break;
+
+  case 'main':
+    $settings['simple_environment_indicator'] = '#004984 Main';
+    $config['config_split.config_split.main']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     break;
 
   case 'dev':
@@ -111,8 +125,9 @@ switch ($env) {
     $base_url = "https://opetustila-test.it.helsinki.fi";
     // Disable config_readonly on dev.
     $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on dev.
+    // Enable local split (includes stage_file_proxy) on dev.
     $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-test.it.helsinki.fi';
     break;
@@ -124,27 +139,18 @@ switch ($env) {
     $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-staging.it.helsinki.fi';
     break;
 
+  case 'ddev':
   case 'local':
     $settings['simple_environment_indicator'] = '#88b700 Local';
-    $base_url = "https://local.tilat.fi";
+    $base_url = "https://client-fi-hy-tilavaraus.ddev.site";
     // Disable config_readonly on local.
     $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on local.
+    // Enable local split on local.
     $config['config_split.config_split.local']['status'] = TRUE;
+    $config['config_split.config_split.silta']['status'] = FALSE;
     // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://local.tilat.fi';
-    break;
-
-  case 'lando':
-    $settings['simple_environment_indicator'] = '#88b700 Local';
-    $base_url = "https://tilat.lndo.site";
-    // Disable config_readonly on local.
-    $settings['config_readonly'] = FALSE;
-    // Enable config_split.dev on local.
-    $config['config_split.config_split.local']['status'] = TRUE;
-    // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://tilat.lndo.site';
-    $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://tilat.lndo.site/modules/custom/migrate_optime_json/data/locations11_example.json';
+    $config['simple_sitemap.settings']['base_url'] = 'https://client-fi-hy-tilavaraus.ddev.site';
+    $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://client-fi-hy-tilavaraus.ddev.site/modules/custom/migrate_optime_json/data/locations11_example.json';
     break;
 }
 
@@ -192,17 +198,17 @@ $settings['container_yamls'][] = __DIR__ . '/services.yml';
 // Fix warning on Drupal status page.
 $settings['trusted_host_patterns'] = [
   '^local\.tilat\.fi$',
-  '^tilat\.lndo\.site$',
+  '^tilat\.ddev\.site$',
   '^.*\.helsinki\.fi$',
   '^127\.0\.0\.1$',
 ];
 
 /**
- * local setup for switching between optime apis used.
+ * Optime migration source. Read by the optime_url migrate source plugin.
+ * Set OPTIME_URL and OPTIME_API_KEY in the environment (Silta php.env).
  */
-
-$settings['optime-url'] = getenv("OPTIME_URL");
-$settings['optime-api-key'] = getenv("OPTIME_API_KEY");
+$settings['optime-url'] = getenv('OPTIME_URL') ?: '';
+$settings['optime-api-key'] = getenv('OPTIME_API_KEY') ?: '';
 /**
  * Environment specific override configuration, if available.
  */
@@ -210,10 +216,14 @@ if (file_exists(__DIR__ . '/settings.local.php')) {
   include __DIR__ . '/settings.local.php';
 }
 
-$settings['config_exclude_modules'] = ['devel', 'stage_file_proxy'];
-
 // Automatically generated include for settings managed by ddev.
 $ddev_settings = __DIR__ . '/settings.ddev.php';
 if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
   require $ddev_settings;
+}
+
+// Silta cluster configuration overrides.
+// @see: https://github.com/wunderio/charts/blob/master/drupal/files/settings.silta.php
+if (getenv('SILTA_CLUSTER') && file_exists(DRUPAL_ROOT . '/sites/default/settings.silta.php')) {
+  include DRUPAL_ROOT . '/sites/default/settings.silta.php';
 }

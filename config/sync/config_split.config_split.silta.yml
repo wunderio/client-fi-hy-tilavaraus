@@ -1,0 +1,17 @@
+uuid: d72a2750-fa67-45d1-a6a9-ef93dd7731eb
+langcode: fi
+status: true
+dependencies: {  }
+id: silta
+label: Silta
+description: 'Default configuration for feature environments in Silta'
+weight: 0
+stackable: false
+no_patching: false
+storage: folder
+folder: ../config/silta
+module:
+  stage_file_proxy: 0
+theme: {  }
+complete_list: {  }
+partial_list: {  }

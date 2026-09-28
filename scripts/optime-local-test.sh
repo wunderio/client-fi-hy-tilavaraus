@@ -47,4 +47,3 @@ ddev drush migrate:import optime_integration --update -vvv
 
 echo "Local test run completed. Source mode restored to live."
 
-
