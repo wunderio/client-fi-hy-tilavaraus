@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\migrate_optime_json\Plugin\migrate\source;
 
-use Drupal\Core\State\StateInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\migrate\Attribute\MigrateSource;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate_plus\DataParserPluginManager;
@@ -18,11 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class OptimeUrl extends Url {
 
   /**
-   * The state service.
-   */
-  protected StateInterface $state;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -31,10 +26,7 @@ class OptimeUrl extends Url {
     $plugin_definition,
     MigrationInterface $migration,
     DataParserPluginManager $parserPluginManager,
-    StateInterface $state,
   ) {
-    $this->state = $state;
-
     // Track last imported time.
     if (isset($configuration['track_last_imported']) && $configuration['track_last_imported']) {
       $configuration['track_last_imported'] = TRUE;
@@ -54,8 +46,6 @@ class OptimeUrl extends Url {
   public static function create($container, array $configuration, $plugin_id, $plugin_definition, ?MigrationInterface $migration = NULL) {
     /** @var \Drupal\migrate_plus\DataParserPluginManager $parser_plugin_manager */
     $parser_plugin_manager = $container->get('plugin.manager.migrate_plus.data_parser');
-    /** @var \Drupal\Core\State\StateInterface $state */
-    $state = $container->get('state');
 
     return new static(
       $configuration,
@@ -63,7 +53,6 @@ class OptimeUrl extends Url {
       $plugin_definition,
       $migration,
       $parser_plugin_manager,
-      $state,
     );
   }
 
@@ -83,8 +72,8 @@ class OptimeUrl extends Url {
         continue;
       }
 
-      // This needs state vars to be set per environment/release.
-      $value = (string) $this->state->get($placeholder, '');
+      // Values come from $settings, populated from OPTIME_URL / OPTIME_API_KEY.
+      $value = $this->settingsValue($placeholder);
 
       if ($placeholder === 'optime-url') {
         $configuration['urls'] = str_replace('{' . $placeholder . '}', $value, $configuration['urls']);
@@ -96,6 +85,18 @@ class OptimeUrl extends Url {
         }
       }
     }
+  }
+
+  /**
+   * Returns an Optime setting as a string.
+   *
+   * Settings are filled in settings.php from the environment. An unset or
+   * non-string value is treated as empty so a stored state value cannot
+   * override the environment.
+   */
+  private function settingsValue(string $placeholder): string {
+    $value = Settings::get($placeholder, '');
+    return is_string($value) ? $value : '';
   }
 
 }

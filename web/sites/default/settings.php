@@ -204,11 +204,11 @@ $settings['trusted_host_patterns'] = [
 ];
 
 /**
- * local setup for switching between optime apis used.
+ * Optime migration source. Read by the optime_url migrate source plugin.
+ * Set OPTIME_URL and OPTIME_API_KEY in the environment (Silta php.env).
  */
-
-$settings['optime-url'] = getenv("OPTIME_URL");
-$settings['optime-api-key'] = getenv("OPTIME_API_KEY");
+$settings['optime-url'] = getenv('OPTIME_URL') ?: '';
+$settings['optime-api-key'] = getenv('OPTIME_API_KEY') ?: '';
 /**
  * Environment specific override configuration, if available.
  */
