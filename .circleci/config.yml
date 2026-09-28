@@ -59,7 +59,7 @@ workflows:
       - silta/drupal-deploy: &deploy
           name: deploy
           executor: silta
-          silta_config: silta/silta.yml,silta/silta-dev.yml
+          silta_config: silta/silta.yml,silta/secrets-dev.yml
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
@@ -86,7 +86,7 @@ workflows:
       - silta/drupal-deploy:
           <<: *deploy
           name: deploy-main
-          silta_config: silta/silta.yml,silta/silta-dev.yml
+          silta_config: silta/silta.yml,silta/silta-main.yml,silta/secrets-dev.yml
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
@@ -115,7 +115,7 @@ workflows:
       - silta/drupal-deploy:
           <<: *deploy
           name: deploy-prod
-          silta_config: silta/silta.yml,silta/silta-prod.yml
+          silta_config: silta/silta.yml,silta/silta-prod.yml,silta/secrets-prod.yml
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-prod.yml
