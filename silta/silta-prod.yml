@@ -3,6 +3,10 @@
 # Override the default values of Wunder's Drupal Helm chart and silta.yml.
 # @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
 
+exposeDomains:
+  tilavaraus-fi:
+    hostname: tilavaraus.helsinki.fi
+
 # Enable autoscaling.
 autoscaling:
   enabled: true
@@ -34,7 +38,7 @@ php:
   # Set the preproduction environment URI.
   # Update this to match the production URI during the site launch.
   env:
-    DRUSH_OPTIONS_URI: "https://production.drupal-project.finland.wdr.io"
+    DRUSH_OPTIONS_URI: "https://tilavaraus.helsinki.fi"
 
   # Don't show errors in production.
   errorLevel: "hide"
