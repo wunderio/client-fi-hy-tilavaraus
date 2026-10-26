@@ -75,9 +75,10 @@ nginx:
     fastly16: 185.31.16.0/22
     fastly17: 199.27.72.0/21
     fastly18: 199.232.0.0/16
-# Uncomment to disable basic authentication.
-# basicauth:
-#   enabled: false
+
+# Disable basic authentication.
+basicauth:
+  enabled: false
 
 # Disable Mailpit in production.
 mailpit:
