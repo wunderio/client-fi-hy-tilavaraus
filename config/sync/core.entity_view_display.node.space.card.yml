@@ -26,7 +26,7 @@ dependencies:
     - field.field.node.space.field_reservation_link
     - field.field.node.space.field_room_type
     - field.field.node.space.field_street_address
-    - image.style.gallery_image
+    - image.style.space_card_image
     - node.type.space
   module:
     - ds
@@ -229,7 +229,7 @@ content:
     label: hidden
     settings:
       image_link: ''
-      image_style: gallery_image
+      image_style: space_card_image
       image_loading:
         attribute: lazy
     third_party_settings:

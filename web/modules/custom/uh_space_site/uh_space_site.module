@@ -42,8 +42,9 @@ function uh_space_site_entity_extra_field_info() {
 function uh_space_site_ds_pre_render_alter(&$layout_render_array, $context, &$vars) {
   if (($context['bundle'] ?? '') === 'page') {
     // The front page shows this photo in the hero. Other pages show it
-    // in the page itself.
-    $vars['#cache']['contexts'][] = 'url.path.is_front';
+    // in the page itself. Cache metadata belongs on the layout render
+    // array, which is what gets rendered and cached.
+    $layout_render_array['#cache']['contexts'][] = 'url.path.is_front';
     if (\Drupal::service('path.matcher')->isFrontPage()) {
       unset($layout_render_array['ds_content']['field_featured_image']);
     }

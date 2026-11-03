@@ -112,7 +112,6 @@
    *   Settings for this view.
    */
   function AjaxView(settings) {
-    const instanceCount = Drupal.ajax.instances.length;
     OriginalAjaxView.call(this, settings);
 
     const baseNames = exposedFilterBaseNames(this.$exposed_form);
@@ -120,11 +119,11 @@
       return;
     }
 
-    Drupal.ajax.instances.slice(instanceCount).forEach((instance) => {
+    // Only the exposed-form request should drop the address-bar filters.
+    // Pager links already carry the active filters in their own URL, and
+    // cleaning those URLs would load the next page with no equipment filter.
+    (this.exposedFormAjax || []).forEach((instance) => {
       if (!instance || !instance.options || !instance.options.url) {
-        return;
-      }
-      if (!instance.submit || !instance.submit.view_name) {
         return;
       }
       instance.options.url = cleanExposedFilterUrl(instance.options.url, baseNames);
