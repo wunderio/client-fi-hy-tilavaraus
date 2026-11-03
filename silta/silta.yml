@@ -21,7 +21,7 @@ php:
 # Reference data configuration.
 referenceData:
   # Configure reference data source for new environments.
-  referenceEnvironment: 'main'
+  referenceEnvironment: 'master'
 
 # Enable Mailpit in non-production environments.
 mailpit:
