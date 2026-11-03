@@ -18,3 +18,15 @@ a[href="#main-content"] {
 a[href="#main-content"]:focus {
   //box-shadow: 0 0 0 4px red;
 }
+
+.node--type-page {
+  .field--name-field-featured-image {
+    margin: 0 0 $line;
+
+    img {
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+  }
+}

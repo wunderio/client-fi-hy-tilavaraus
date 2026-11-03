@@ -15,14 +15,14 @@ dependencies:
     - field.field.taxonomy_term.building.field_navigation_link
     - field.field.taxonomy_term.building.field_opening_times
     - field.field.taxonomy_term.building.field_street_address
-    - responsive_image.styles.hero_image
+    - image.style.gallery_image
     - taxonomy.vocabulary.building
   module:
     - ds
     - ds_chains
     - field_group
+    - image
     - leaflet
-    - responsive_image
     - text
 third_party_settings:
   ds:
@@ -208,16 +208,16 @@ content:
     weight: 6
     region: right
   field_images:
-    type: responsive_image
+    type: image
     label: hidden
     settings:
-      responsive_image_style: hero_image
       image_link: ''
+      image_style: gallery_image
       image_loading:
         attribute: eager
     third_party_settings:
       ds:
-        ds_limit: '1'
+        ds_limit: ''
     weight: 1
     region: header
   field_location_map:

@@ -187,6 +187,11 @@ function uh_space_preprocess_field__ds_field_expert(&$vars) {
  * Implements template_preprocess_views_exposed_form().
  */
 function uh_space_preprocess_views_exposed_form(&$vars) {
+  $form_id = $vars['form']['#id'] ?? '';
+  if (is_string($form_id) && strpos($form_id, 'views-exposed-form-space-search') === 0) {
+    $vars['#attached']['library'][] = 'uh_space/views-exposed-filters';
+  }
+
   if ($vars['theme_hook_original'] == 'views_exposed_form__space_search__main') {
     $space_search = Drupal\views\Views::getView('space_search');
     $main = $space_search->getDisplay('main');

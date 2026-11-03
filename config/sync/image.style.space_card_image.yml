@@ -1,0 +1,15 @@
+uuid: 25928c97-15d6-4aac-a087-2daf002fffed
+langcode: fi
+status: true
+dependencies: {  }
+name: space_card_image
+label: 'Space Card Image'
+effects:
+  9f32a64f-6e97-4e71-988e-46feb5bba151:
+    uuid: 9f32a64f-6e97-4e71-988e-46feb5bba151
+    id: image_scale
+    weight: 1
+    data:
+      width: 800
+      height: 800
+      upscale: false

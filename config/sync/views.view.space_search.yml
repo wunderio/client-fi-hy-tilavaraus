@@ -295,7 +295,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: search_api_term
-          operator: or
+          operator: and
           value: {  }
           group: 1
           exposed: true
@@ -708,7 +708,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: search_api_term
-          operator: or
+          operator: and
           value: {  }
           group: 1
           exposed: true

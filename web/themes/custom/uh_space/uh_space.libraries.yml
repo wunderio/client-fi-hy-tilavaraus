@@ -6,6 +6,15 @@ global:
   js:
     dist/app.js: {}
 
+views-exposed-filters:
+  js:
+    js/views-exposed-filters.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupal.ajax
+    - views/views.ajax
+
 select2:
   version: 1.0.1
   css:
