@@ -1,15 +1,15 @@
-uuid: 379a996f-3350-41c6-96ca-d15d7dedf0a7
+uuid: 18a8b14f-039b-4f3a-8d27-c875b2836b4f
 langcode: fi
 status: true
 dependencies: {  }
-id: main
-label: Main
-description: 'Main configuration'
+id: master
+label: Master
+description: 'Master configuration'
 weight: 0
 stackable: false
 no_patching: false
 storage: folder
-folder: ../config/main
+folder: ../config/master
 module:
   stage_file_proxy: 0
 theme: {  }

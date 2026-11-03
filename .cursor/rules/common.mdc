@@ -25,7 +25,6 @@ alwaysApply: true
   - @.ddev/config.yaml - Local development environment configuration (DDEV)
   - @composer.json - PHP dependencies and project configuration
   - @README.md - Project documentation and setup instructions
-  - @.env.example - Example environment variables template
   - @phpstan.neon - PHP Static Analysis configuration
   - @phpcs.xml - PHP Code Sniffer ruleset
   - @grumphp.yml - Git hooks and code quality checks
@@ -33,7 +32,7 @@ alwaysApply: true
 - **Deployment & CI/CD**
   - @.circleci/config.yml - CircleCI configuration for CI/CD pipelines
   - @silta/silta.yml - Kubernetes deployment configuration
-  - @silta/silta-main.yml - Main environment specific configuration
+  - @silta/silta-master.yml - Master environment specific configuration
   - @silta/silta-prod.yml - Production environment specific configuration
 
 - **Utilities & Scripts**
@@ -128,12 +127,12 @@ When creating commit messages, always analyze the actual changes using `git diff
 
 - **Infrastructure**
   - DDEV for local development (containerized environment with Nginx, PHP, MariaDB)
-    - Additional services: Adminer, Elasticsearch, Kibana, Mailpit, Varnish
+    - Additional services: Adminer, Mailpit
     - Configuration in @.ddev/config.yaml and related service files
   - Silta deployment system (Wunder's Kubernetes deployment solution) [@wunderio/silta](https://github.com/wunderio/silta)
   - Helm charts for Kubernetes orchestration
   - Docker containerization (Nginx and PHP containers)
   - Google Cloud Platform (GCP) infrastructure
-  - Kubernetes-based autoscaling (2-10 replicas in production)
+  - Kubernetes-based autoscaling (2-5 replicas in production)
   - Varnish caching (configurable)
   - CircleCI for continuous integration

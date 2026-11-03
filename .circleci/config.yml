@@ -16,7 +16,7 @@ branch-filters:
     branches:
       ignore:
         - production
-        - main
+        - master
         - /dependabot\/.*/
 
 workflows:
@@ -69,33 +69,33 @@ workflows:
           filters:
             <<: *ignored-branches
 
-      # Build job for main environment.
+      # Build job for the master environment.
       - silta/drupal-build:
           <<: *build
-          name: build-main
+          name: build-master
           requires:
             - validate
             - analyze
           filters:
             branches:
               only:
-                - main
+                - master
 
-      # Deploy job for main environment.
+      # Deploy job for the master environment.
       # Extends the job defined for feature environments.
       - silta/drupal-deploy:
           <<: *deploy
-          name: deploy-main
-          silta_config: silta/silta.yml,silta/silta-main.yml,silta/secrets-dev.yml
+          name: deploy-master
+          silta_config: silta/silta.yml,silta/silta-master.yml,silta/secrets-dev.yml
           pre-release:
             - silta/decrypt-files:
                 files: silta/secrets-dev.yml
           requires:
-            - build-main
+            - build-master
           filters:
             branches:
               only:
-                - main
+                - master
 
       # Build job for production environment.
       # Extends the job defined for feature environments.

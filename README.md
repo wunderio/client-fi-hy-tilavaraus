@@ -1,436 +1,104 @@
-# Wunder template for Drupal projects
+# Opetustilat
 
-This project is a tailored fork of the popular [drupal-composer template](https://github.com/drupal-composer/drupal-project). It is designed for deploying to [Kubernetes](https://kubernetes.io/) clusters via [CircleCI](https://circleci.com/).
+University of Helsinki teaching-space catalog (`uh/tilat`). The public site lists spaces, campuses, and buildings in Finnish, English, and Swedish. A space page links out to Optime for booking. There is no booking form on this site.
 
-## Getting started
-
-1. **Create a new project repository**
-  Click "[Use this template](https://github.com/wunderio/drupal-project/generate)" to generate a new project:
-   - Select the correct owner.
-   - Name the project as `client-COUNTRYCODE-CLIENT-PROJECT`.
-   - Set the repository to private (unless the project is public).
-
-2. **Clone and customize the repository**
-   Clone the new project locally and update its details:
-   - Update `README.md` with the project details
-   - Update `composer.json` with the project name
-   - Modify the `silta/silta*` files [values](https://github.com/wunderio/charts/blob/master/drupal/values.yaml)
-   - Adjust `grumphp.yml` tasks, including updating the project name in the `git_commit_message` regex
-   - Configure local development environment:
-     - For DDEV: Update project settings in `.ddev/config.yaml`
-   - For database synchronization, see [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
-   - Adjust `web/sites/default/settings.php` settings (`stage_file_proxy` etc)
-   - Adjust `config_split` settings for silta (default), production, main, local environments
-
-3. **Set up CircleCI**
-   - Log in to [CircleCI](https://app.circleci.com/) using your GitHub account.
-   - Add the new project to CircleCI using the existing configuration.
-
-4. **Configure encryption keys and secrets**
-   - Define encryption keys for `silta_dev` and `silta_finland` contexts in the CircleCI project settings and backup the keys in LastPass. Use the following naming convention: `SEC_{PROJECT_NAME}_{CONTEXT}` where `CONTEXT` is the environment, such as `silta_dev` or `silta_finland`.
-   - Update the `.circleci/config.yml` file with the corresponding `secret_key_env` values.
-   - Define the secret environment variables in the `silta/silta*.secrets` YAML files for the `silta_dev` and `silta_finland` contexts.
-   - Encrypt the `silta/silta*.secrets` files using the encryption keys and commit the encrypted files to the repository.
-   - See the relevant [Silta's documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key) for details.
-
-5. **Enable JIRA integration**
-   - Configure [automatic autolinks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#custom-autolinks-to-external-resources) for the project's JIRA environment to link ticket IDs to JIRA issues seamlessly.
-
-For additional instructions, please refer to the [Silta documentation](https://github.com/wunderio/silta).
-
-## Production environment
-
-- **URL**: <https://production.drupal-project.finland.wdr.io>
-- **Drush alias**: `drush @prod st`
-- **SSH**: `ssh www-admin@production-shell.drupal-project -J www-admin@ssh.finland.wdr.io`
-
-### Environment variables for `silta_finland` context
-
-The following secret variables are defined in the `silta/silta-prod.secrets` file for the `silta_finland` context:
-
-- `TEST_KEY_PROD` - Secret key for testing purposes.
-
-## Main environment
-
-- **URL**: <https://main.drupal-project.dev.wdr.io>
-- **Drush alias**: `drush @main st`
-- **SSH**: `ssh www-admin@main-shell.drupal-project -J www-admin@ssh.dev.wdr.io`
-
-The Drush alias for the **current** Silta feature branch deployment is `drush @current st`.
-
-### Environment variables for `silta_dev` context
-
-The following secret variables are defined in the `silta/silta.secrets` file for the `silta_dev` context:
-
-- `TEST_KEY` - Secret key for testing purposes.
+Drupal 11 (install profile `minimal`), PHP 8.3, docroot `web/`. A longer map of the theme, modules, and config is in [docs/project.md](docs/project.md).
 
 ## Local development
 
-This project uses DDEV for local development.
-
-### DDEV environment
-
-[DDEV](https://ddev.com/get-started/) provides a containerized development environment with all necessary services preconfigured.
-
-#### DDEV setup instructions
-
-1. Install [DDEV](https://ddev.com/get-started/)
-2. Ensure Docker is running on your system
-3. Start the environment and set up your project:
-
-  ```bash
-  # Start the DDEV environment
-  ddev start
-
-  # Authenticate SSH for database syncing
-  ddev auth ssh
-
-  # Synchronize local database with a remote environment
-  # Synchronization is provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal)
-  ddev syncdb
-
-  # Apply configuration changes
-  ddev drush deploy
-
-  # Get a one-time login link for admin access
-  ddev drush uli
-  ```
-
-Note: All commands in the DDEV section should be run within the DDEV environment using `ddev` prefix (e.g., `ddev drush uli`), or by using `ddev ssh` to access the container shell first.
-
-#### DDEV services and access points
-
-The project can be accessed at <https://drupal-project.ddev.site>
-
-For a complete list of all available services, URLs, and ports, use:
-
-  ```bash
-  ddev describe
-  ```
-
-#### DDEV common commands
-
-- `ddev` - Display available commands
-- `ddev adminer` - Launch Adminer database management interface
-- `ddev grumphp <commands>` - Run code quality checks (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
-- `ddev mailpit` - Open Mailpit email testing interface
-- `ddev npm <commands>` - Execute npm commands
-- `ddev phpunit <commands>` - Run test suites (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
-- `ddev varnishadm <commands>` - Manage Varnish cache
-- `ddev xdebug <mode>` - Configure Xdebug debugging modes
-- `ddev syncdb [environment]` - Sync database from remote environment (requires VPN and `ddev auth ssh` (command provided by [ddev-wunderio-drupal](https://github.com/wunderio/ddev-wunderio-drupal))
-
-<details>
-<summary>DDEV Elasticsearch configuration</summary>
-
-#### DDEV Elasticsearch configuration
-
-This project includes Elasticsearch service for robust full-text search capabilities. It's automatically set up during DDEV initialization.
-
-##### Plugins configuration
-
-- Pre-configured with `analysis-icu` for Unicode/multilingual text processing
-- Additional plugins can be defined in `.ddev/docker-compose.elasticsearch8.yaml`
-
-```yaml
-services:
-  elasticsearch:
-    environment:
-      - ELASTICSEARCH_PLUGINS=analysis-icu  # Space-separated plugin list
-```
-
-##### Useful commands
+This project uses [DDEV](https://ddev.com/get-started/). The project name is `client-fi-hy-tilavaraus`.
 
 ```bash
-# Check Elasticsearch status
-ddev exec -s elasticsearch "curl -s localhost:9200"
-
-# List installed plugins
-ddev exec -s elasticsearch "bin/elasticsearch-plugin list"
+ddev start
+ddev auth ssh
+ddev syncdb
+ddev drush deploy
+ddev drush uli
 ```
 
-##### Web interface
+The site is at <https://client-fi-hy-tilavaraus.ddev.site>. `ddev describe` lists Mailpit, Adminer, and the other local URLs. Search uses the database (`search_api_db`). This checkout does not add Elasticsearch, Kibana, Redis, or a project Varnish service.
 
-Elasticvue is included for visualization and management at <http://drupal-project.ddev.site:9005>
+Theme CSS and JS are committed under `web/themes/custom/uh_space/dist`. Rebuild them from the theme directory with `npm run build` in `web/themes/custom/uh_space`. The root `npm run build` script does not compile the theme.
 
-</details>
+`ENVIRONMENT_NAME` `ddev` or `local` enables the `local` config split (devel and stage file proxy) and points the Optime migration at the example JSON in `web/modules/custom/migrate_optime_json/data/`.
 
-<details>
-<summary>DDEV WunderIO Drupal</summary>
+## Environments
 
-#### DDEV WunderIO Drupal addon
+Config lives in `config/sync`. Splits:
 
-The Drupal template includes the Wunder-specific `ddev-wunderio-drupal` addon. This addon provides additional functionality and tools specifically designed for Drupal development, including custom commands, configurations, and automation scripts to enhance your workflow.
+| Split | Folder | When it is on |
+| --- | --- | --- |
+| `silta` | `config/silta` | Feature branches, and `ENVIRONMENT_NAME` `dev` or `stage` |
+| `master` | `config/master` | `ENVIRONMENT_NAME` `master` |
+| `local` | `config/local` | `ENVIRONMENT_NAME` `ddev` or `local` |
 
-For more information about the addon, configuration options, and available custom commands, see:
-<https://github.com/wunderio/ddev-wunderio-drupal/tree/main>
+`production` turns every split off. Stage file proxy on non-production environments fetches files from <https://tilavaraus.helsinki.fi>.
 
-#### Automated installation
+CircleCI (`.circleci/config.yml`) validates, analyzes, builds, and deploys with the Silta orb.
 
-This addon is installed automatically when you run `ddev start`.
+| Environment | Git branch | Silta files | CircleCI context |
+| --- | --- | --- | --- |
+| Feature | any branch except `master` and `production` | `silta/silta.yml`, `silta/secrets-dev.yml` | `silta_dev_upc_hy_tilavaraus` |
+| Master | `master` | `silta/silta.yml`, `silta/silta-master.yml`, `silta/secrets-dev.yml` | `silta_dev_upc_hy_tilavaraus` |
+| Production | `production` | `silta/silta.yml`, `silta/silta-prod.yml`, `silta/secrets-prod.yml` | `silta_prod_c_hy_tilavaraus` |
 
-The automation is configured in `.ddev/config.wunderio.yaml` using a `pre-start` host hook:
+Feature deploys wait for the `approve-deployment` job. Master cron is hourly (`silta/silta-master.yml`). Production cron is every five minutes, with autoscaling from 2 to 5 replicas. The production hostname is <https://tilavaraus.helsinki.fi>.
 
-```yaml
-hooks:
-  pre-start:
-    - exec-host: 'if [ ! -f "${DDEV_GLOBAL_DIR}/wunderio/core/wdr-core.sh" ]; then ddev add-on get wunderio/ddev-wunderio-drupal; fi'
-```
+`dev` and `stage` are `ENVIRONMENT_NAME` values in `web/sites/default/settings.php`. They select the `silta` split and an admin-bar color. They are not CircleCI branches.
 
-This means developers only need to clone the project and run `ddev start`; no manual addon installation step is required.
+Drush aliases are in `drush/sites/self.site.yml`:
 
-Common commands provided by the addon include:
+- Local: `ddev drush`
+- Current feature environment: `drush @current st`
+- Master: `drush @master st`
+- Production: `drush @prod st`
 
-- `ddev grumphp`
-- `ddev phpunit`
-- `ddev syncdb`
+The master alias host is `master-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.dev.wdr.io`. Production uses `production-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.finland.wdr.io`. The public URL of the master environment is not set in `silta/silta-master.yml`.
 
-</details>
+The admin bar colors are set in `settings.php`:
 
-## Development tips
+| `ENVIRONMENT_NAME` | Color | Label |
+| --- | --- | --- |
+| unset, or any other value | `#5c6b73` | Feature |
+| `master` | `#004984` | Master |
+| `stage` | `#e56716` | Stage |
+| `dev` | `#6f42c1` | Dev |
+| `ddev`, `local` | `#88b700` | Local |
+| `production` | `#d4000f` | Production |
 
-<details>
-<summary>Code quality tools</summary>
+## Secrets
 
-### Code quality tools
+`silta/secrets-dev.yml` and `silta/secrets-prod.yml` are encrypted. Do not commit decrypted copies. Names read from the environment in `web/sites/default/settings.php`:
 
-This project includes several tools to maintain code quality and consistency across the codebase.
+- `ENVIRONMENT_NAME`
+- `WARDEN_TOKEN` (production)
+- `OPTIME_URL`
+- `OPTIME_API_KEY`
 
-#### Markdown Linting
+Decrypt and encrypt with [Silta CLI](https://github.com/wunderio/silta-cli). The CircleCI contexts above hold the keys. See [Silta's secret documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key).
 
-Markdown files can be checked and automatically fixed using the following npm scripts:
+## Tests and code quality
+
+PHPUnit is configured in `phpunit.xml`. Custom modules have no test classes. GrumPHP runs the empty `unit` suite and notes that PHPUnit fails with 0 tests. Playwright is not installed. The adoption plan is [docs/playwright-adoption.md](docs/playwright-adoption.md). Findings and follow-on work are in
+[docs/audit-upsell.md](docs/audit-upsell.md).
 
 ```bash
-# Check markdown files for linting issues
-ddev npm run lint:md
-
-# Automatically fix markdown linting issues where possible
-ddev npm run lint:md:fix
-```
-
-Markdown linting rules are configured in `.markdownlint.json` at the project root.
-
-#### JavaScript and CSS Linting
-
-The project also includes linting for JavaScript and CSS files:
-
-```bash
-# Check JavaScript files
-ddev npm run lint:js
-
-# Check CSS/SCSS files
-ddev npm run lint:css
-
-# Run all linting (JS, CSS, and Markdown)
 ddev npm run lint
+ddev grumphp
 ```
 
-</details>
-
-<details>
-<summary>Cursor AI Code Editor</summary>
-
-### Cursor AI Code Editor
-
-This project uses [Cursor](https://docs.cursor.com/) as the recommended AI-powered IDE. Cursor enhances development productivity through AI-assisted coding features while maintaining compatibility with VSCode extensions and settings.
-
-#### Project-specific AI Rules
-
-- Rules are stored in `@.cursor/rules/` directory
-- Main configuration file: `@.cursor/rules/common.mdc`
-- Rules provide AI with project-specific context about:
-  - File organization and key project files
-  - Development environment setup
-  - Code standards and technology stack
-  - Git workflow and commit message formatting
-
-</details>
-
-<details>
-<summary>Drupal core updates</summary>
-
-### Drupal core updates
-
-- [Updating Drupal core](https://www.drupal.org/docs/updating-drupal/updating-drupal-core-via-composer).
-- [Altering scaffold files](https://www.drupal.org/docs/develop/using-composer/using-drupals-composer-scaffold#toc_4) (e.g., `robots.txt`, `.htaccess`).
-
-</details>
-
-<details>
-<summary>Varnish and Purge configuration</summary>
-
-### Varnish and Purge configuration
-
-This section describes how to set up Varnish caching and Purge functionality in your local development environment.
-
-Note: Drush commands in this section should be run with the appropriate environment prefix (`ddev`).
-
-#### Configuration Overview
-
-The project includes ready-to-use Varnish configuration:
-
-1. **Configuration Import (Recommended)**
-   - For existing projects, simply import the configuration from `config/sync`:
-
-      ```bash
-      drush cim -y
-      ```
-
-   - This applies all Purge and Varnish settings, including processors and purgers
-
-2. **Manual Configuration (for new sites)**
-   - If config/sync is not available, follow these steps:
-
-   a. **Install required modules**:
-
-      ```bash
-      drush en purge purge_drush purge_processor_lateruntime purge_queuer_coretags purge_tokens purge_ui varnish_purger varnish_purge_tags -y
-      ```
-
-   b. **Configure Varnish Purger**:
-      - Set a value for **Browser and proxy cache maximum age** in `admin/config/development/performance`
-      - Navigate to `/admin/config/development/performance/purge`
-      - Click **Add purger** and select **Varnish Purger**:
-        - **Name:** "Varnish Purger"
-        - **Type:** "Tags"
-        - **Request method:** "BAN" (important: use BAN instead of PURGE for compatibility with Silta)
-        - **Headers:** `Cache-Tags`: `[invalidation:expression]`
-        - Save the configuration
-
-   c. **Configure processors**:
-      - Go to `/admin/config/development/performance/purge/processors`
-      - Ensure these processors are enabled:
-        - `drush_purge_invalidate` (for manual invalidation via Drush)
-        - `lateruntime` (for batching invalidations)
-        - `purge_ui_block_processor` (for admin UI functionality)
-
-   d. **Export the configuration**:
-
-      ```bash
-      drush cex -y
-      ```
-
-   e. **Update settings.php**:
-      - Find the purger ID in `varnish_purger.settings.<PURGER_ID>.yml`
-      - Update `web/sites/default/settings.php` with the correct purger ID:
-
-        ```php
-        if (getenv('VARNISH_ADMIN_HOST')) {
-          $config['varnish_purger.settings.<PURGER_ID>']['hostname'] = trim(getenv('VARNISH_ADMIN_HOST'));
-          $config['varnish_purger.settings.<PURGER_ID>']['port'] = getenv('VARNISH_ADMIN_PORT') ? trim(getenv('VARNISH_ADMIN_PORT')) : '80';
-        }
-        ```
-
-#### Environment-Specific Setup
-
-##### DDEV (Recommended)
-
-1. **Varnish Configuration**: DDEV comes pre-configured with Varnish in `.ddev` folder.
-
-2. **Testing Configuration**:
-
-   ```bash
-   ddev drush cr
-   ddev exec curl -X BAN -H "Cache-Tags: config:system.performance" http://varnish
-   ```
-
-   If working correctly, you should receive a "200 Ban added" response
-
-3. **Viewing Varnish logs**:
-
-   ```bash
-   ddev exec -s varnish varnishlog -i BAN -i Cache
-   ```
-
-### Important Notes
-
-- **BAN vs PURGE Method:** Always use the "BAN" method in the Varnish purger configuration instead of "PURGE". The Silta Varnish configuration is set up to handle BAN requests but may reject PURGE requests with "405 Method Not Allowed" errors.
-
-- **Processors:** The default Purge setup uses the `purge_processor_lateruntime` module, which empties the purge queue during page requests. This works well for most sites needing immediate cache clearing. Ensure all required processors are enabled.
-
-- **Cache Tags:** The Varnish configuration is set up to handle cache tag invalidation with the `Cache-Tags` header.
-</details>
-
-<details>
-<summary>Running tests</summary>
-
-### Running tests
-
-The [PHPUnit](https://phpunit.de/) test framework is predefined in this project. See `phpunit.xml` for details. A minified `web/modules/custom/phpunit_example` module from the [examples module](https://www.drupal.org/project/examples) is included for learning purposes.
-
-#### Testing examples
-
-Note: Run these commands with the appropriate environment prefix (`ddev phpunit`).
-
-- Run one test class: `phpunit path/to/your/class/file.php`
-- List groups: `phpunit --list-groups`
-- Run all tests in a particular group: `phpunit --group Groupname`
-</details>
-
-### Secrets handling
-
-[Silta CLI](https://github.com/wunderio/silta-cli) is a command-line tool to manage secrets and configurations for Silta projects. Use the following commands:
-
-- Encrypt a file: `silta secrets encrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Decrypt a file: `silta secrets decrypt --file silta/silta.secrets --secret-key=<secret_key_env>`
-- Display help: `silta secrets --help`
-
-See the corresponding `secret_key_env` values in the `.circleci/config.yml` file for the `silta_dev` and `silta_finland` contexts. Refer to the Getting Started section for details.
+Lint scripts cover ESLint, Stylelint, and markdownlint. GrumPHP also runs PHPCS, PHPStan, and PHP 8.3 compatibility on `web/modules/custom` and `web/themes/custom`.
 
 ## Contributing
 
-This project is maintained by [Wunder](https://wunder.io/). Contributions from the community are welcome.
+Maintained by [Wunder](https://wunder.io/). GrumPHP requires a commit subject that starts with a ticket id:
 
-<details>
-<summary>Commit message validation and ticketing system integration</summary>
+```text
+HYTV-123: (feat) Short description
 
-### Commit message validation and ticketing system integration
+- What changed and why
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages, with an additional requirement for ticket IDs. Each commit message must include a valid ticket ID (except for merge commits) and follow the conventional commits format:
-
-```bash
-[PROJECTKEY-123]: (feat) Add new feature description
-
-- Detailed change description
-- Another relevant detail
-
-Refs: file1.ext, file2.ext
+Refs: path/to/file.php
 ```
 
-Types include (used within parentheses):
-
-- feat: New feature (correlates with MINOR in semantic versioning)
-- fix: Bug fix (correlates with PATCH in semantic versioning)
-- docs: Documentation changes
-- style: Changes not affecting code meaning
-- refactor: Code changes neither fixing bugs nor adding features
-- perf: Performance improvements
-- test: Adding or correcting tests
-- build: Build system or dependency changes
-- ci: CI configuration changes
-- chore: Other changes not modifying src or test files
-
-Breaking changes must be indicated by appending a ! after the type/scope or including "BREAKING CHANGE:" in the footer.
-
-Ticket ID formats:
-
-- JIRA: `[PROJECTKEY-123]: (type) Description`
-- GitHub: `GH-123: (type) Description`
-
-We leverage [autolinked references](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls) to automatically convert ticket IDs into clickable links for easy navigation. This enhances traceability and accessibility across platforms.
-
-Validation rules are implemented via the GrumPHP `git_commit_message` component. See `grumphp.yml` for configuration details.
-</details>
-
-### Git workflow
-
-Refer to the [WunderFlow repository](https://github.com/wunderio/WunderFlow) for Git workflow details.
-
-### Deployments
-
-Deployments are managed with CircleCI. Configurations are in `.circleci/config.yml`.
-
-- Feature branches require manual approval for deployment by default.
-- Other branches deploy automatically but can be configured for manual approval.
-
-Manual approvals are managed through the `approve-deployment` job in the CircleCI UI by clicking the "approve-deployment" job label when marked as "Needs Approval."
+GrumPHP checks that the subject starts with a ticket id, a colon, and a space. Types used in this project: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`.
