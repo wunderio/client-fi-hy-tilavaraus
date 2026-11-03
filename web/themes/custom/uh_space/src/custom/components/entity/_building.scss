@@ -1,6 +1,20 @@
 .taxonomy-term--type-building {
   .field--name-field-images {
+    display: grid;
+    gap: $line / 2;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+
+    &.field__item,
+    .field__item {
+      aspect-ratio: 3 / 2;
+      background-color: $lightsilver;
+    }
+
     img {
+      display: block;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
       width: 100%;
     }
   }

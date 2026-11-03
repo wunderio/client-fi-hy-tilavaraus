@@ -39,21 +39,27 @@
   }
 
   .field--name-field-images {
-    display: flex;
+    display: grid;
     flex-basis: 100%;
+    gap: $line / 2;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
 
+    &.field__item,
     .field__item {
-      flex-basis: 50%;
-      flex-grow: 1;
-      margin-right: $line / 2;
+      aspect-ratio: 3 / 2;
+      background-color: $lightsilver;
+    }
 
-      &:last-child {
-        margin-right: 0;
-      }
+    a {
+      display: block;
+      height: 100%;
     }
 
     img {
       display: block;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
       width: 100%;
     }
   }
@@ -66,6 +72,10 @@
     .field--name-field-images {
       margin: 0;
       order: -1;
+
+      img {
+        object-fit: cover;
+      }
     }
 
     .field--name-field-images,

@@ -26,14 +26,14 @@ dependencies:
     - field.field.node.space.field_reservation_link
     - field.field.node.space.field_room_type
     - field.field.node.space.field_street_address
+    - image.style.gallery_image
     - node.type.space
-    - responsive_image.styles.space_image
   module:
     - ds
     - ds_chains
     - field_group
+    - image
     - link
-    - responsive_image
     - text
     - user
 third_party_settings:
@@ -353,16 +353,16 @@ content:
     weight: 1
     region: right
   field_images:
-    type: responsive_image
+    type: image
     label: hidden
     settings:
-      responsive_image_style: space_image
       image_link: file
+      image_style: gallery_image
       image_loading:
         attribute: eager
     third_party_settings:
       ds:
-        ds_limit: '2'
+        ds_limit: ''
         ft:
           id: default
           settings:
