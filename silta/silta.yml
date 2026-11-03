@@ -22,6 +22,7 @@ php:
 referenceData:
   # Configure reference data source for new environments.
   referenceEnvironment: 'master'
+  updateAfterDeployment: false # Disable reference data update after deployment until reference data is writable by the PHP container.
 
 # Enable Mailpit in non-production environments.
 mailpit:
