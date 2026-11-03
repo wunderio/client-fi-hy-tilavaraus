@@ -6,10 +6,12 @@ dependencies:
     - field.field.node.page.body
     - field.field.node.page.field_featured_image
     - field.field.node.page.field_lead_text
+    - image.style.gallery_image
     - node.type.page
   module:
     - ds
     - ds_chains
+    - image
     - text
     - user
 third_party_settings:
@@ -32,6 +34,7 @@ third_party_settings:
         link_custom: ''
     regions:
       ds_content:
+        - field_featured_image
         - body
         - links
   ds_chains:
@@ -41,6 +44,17 @@ targetEntityType: node
 bundle: page
 mode: default
 content:
+  field_featured_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: gallery_image
+      image_loading:
+        attribute: eager
+    third_party_settings: {  }
+    weight: -1
+    region: ds_content
   body:
     type: text_default
     label: hidden
@@ -54,7 +68,6 @@ content:
     weight: 0
     region: ds_content
 hidden:
-  field_featured_image: true
   field_lead_text: true
   langcode: true
   search_api_excerpt: true
