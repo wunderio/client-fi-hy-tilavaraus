@@ -11,13 +11,16 @@ grumphp:
     git_commit_message:
       max_body_width: 0
       max_subject_width: 0
+      enforce_capitalized_subject: false
       matchers:
-        # Modify the universal JIRA regex provided to suit your project requirements, incl. name.
-        # For example, the regex for a project called WD would be: `/^WD-[1-9][0-9]*: /`.
-        'The commit must start with the JIRA or GitHub issue number': '/^[A-Z][A-Z0-9_]+-[1-9][0-9]*: /'
+        # Support both formats:
+        # 1. JIRA/GitHub issue first: TICKET-#: Message
+        # 2. Conventional commits: type(TICKET-#): Message
+        # Examples: HYTV-446: Fix..., fix(HYTV-446): Add..., feat(GH-42): New...
+        'The commit must start with the JIRA or GitHub issue number': '/^((feat|fix|chore|docs|style|refactor|perf|test|ci|build|revert)\([A-Z][A-Z0-9_]+-[1-9][0-9]*\)|[A-Z][A-Z0-9_]+-[1-9][0-9]*): [A-Z]/'
     php_compatibility:
       run_on: '%grumphp.run_on_paths%'
-      testVersion: '8.3'
+      testVersion: '8.4'
     check_file_permissions: ~
     php_check_syntax:
       run_on: '%grumphp.run_on_paths%'
@@ -26,8 +29,27 @@ grumphp:
       run_on: '%grumphp.run_on_paths%'
     php_stan:
       run_on: '%grumphp.run_on_paths%'
-    yaml_lint: ~
-    json_lint: ~
+    yaml_lint:
+      # OpenSSL-encrypted Silta secrets are not UTF-8 YAML. Parsing them
+      # throws a Symfony ParseException with a null snippet, which crashes
+      # GrumPHP before it can report the file.
+      ignore_patterns:
+        - '/vendor/'
+        - '/node_modules/'
+        - '/core/'
+        - '/libraries/'
+        - '/contrib/'
+        - 'silta/secrets-'
+    json_lint:
+      # yarn.lock is Yarn's own format. The json_lint task also checks
+      # *.lock, which is correct for composer.lock.
+      ignore_patterns:
+        - '/vendor/'
+        - '/node_modules/'
+        - '/core/'
+        - '/libraries/'
+        - '/contrib/'
+        - 'yarn.lock'
     # PHPUnit will fail with 0 tests.
     phpunit:
       testsuite: unit

@@ -44,6 +44,7 @@ third_party_settings:
       disable_css: true
       entity_classes: all_classes
       settings:
+        label: ''
         classes:
           layout_class: {  }
           header: {  }
@@ -59,7 +60,6 @@ third_party_settings:
         attributes: ''
         link_attribute: ''
         link_custom: ''
-        label: ''
     regions:
       header:
         - group_header_main

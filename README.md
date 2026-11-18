@@ -2,7 +2,7 @@
 
 University of Helsinki teaching-space catalog (`uh/tilat`). The public site lists spaces, campuses, and buildings in Finnish, English, and Swedish. A space page links out to Optime for booking. There is no booking form on this site.
 
-Drupal 11 (install profile `minimal`), PHP 8.3, docroot `web/`. A longer map of the theme, modules, and config is in [docs/project.md](docs/project.md).
+Drupal 11 (install profile `minimal`), PHP 8.4, docroot `web/`. A longer map of the theme, modules, and config is in [docs/project.md](docs/project.md).
 
 ## Local development
 
@@ -79,13 +79,15 @@ Decrypt and encrypt with [Silta CLI](https://github.com/wunderio/silta-cli). The
 
 ## Tests and code quality
 
-PHPUnit is configured in `phpunit.xml`. Custom modules have no test classes. GrumPHP runs the empty `unit` suite and notes that PHPUnit fails with 0 tests. Playwright is not installed. The adoption plan is [docs/playwright-adoption.md](docs/playwright-adoption.md). Findings and follow-on work are in
-[docs/audit-upsell.md](docs/audit-upsell.md).
+PHPUnit 11 is configured in `phpunit.xml`. Custom modules have no PHPUnit classes. Playwright covers the anonymous login pages and creating a `page` node.
 
 ```bash
 ddev npm run lint
 ddev grumphp
+ddev npx playwright test
 ```
+
+`ddev start` installs Playwright browsers. `npx playwright show-report` opens the last HTML report.
 
 Lint scripts cover ESLint, Stylelint, and markdownlint. GrumPHP also runs PHPCS, PHPStan, and PHP 8.3 compatibility on `web/modules/custom` and `web/themes/custom`.
 

@@ -8,7 +8,7 @@ Opetustilat is the University of Helsinki teaching-space catalog. Composer packa
 
 Visitors search spaces, open a campus or building, and follow a booking link to Optime. The site does not take the booking itself. Languages are Finnish (default), English, and Swedish, each on a path prefix (`/fi`, `/en`, `/sv`).
 
-Drupal core is `drupal/core-recommended: ^11`, locked at 11.4.11 in `composer.lock`. PHP is 8.3. The install profile is `minimal` (`config/sync/core.extension.yml`). The docroot is `web/`.
+Drupal core is `drupal/core-recommended: ^11.4`. PHP is 8.4. The install profile is `minimal` (`config/sync/core.extension.yml`). The docroot is `web/`.
 
 ## 2. Platform and environments
 
@@ -32,7 +32,7 @@ Non-production environments set stage file proxy origin to `https://tilavaraus.h
 
 ### Local
 
-DDEV project name `client-fi-hy-tilavaraus` (`.ddev/config.yaml`). URL `https://client-fi-hy-tilavaraus.ddev.site`. PHP 8.3, docroot `web`, nginx-fpm, MariaDB 11.8. `type` is `drupal10` while core is 11.
+DDEV project name `client-fi-hy-tilavaraus` (`.ddev/config.yaml`). URL `https://client-fi-hy-tilavaraus.ddev.site`. PHP 8.4, docroot `web`, nginx-fpm, MariaDB 11.8, Node 24. Project type is `drupal11`.
 
 Tracked DDEV files: `.ddev/config.yaml`, `.ddev/config.wunderio.yaml`, `.ddev/docker-compose.wunderio.yaml`. No project compose file for Elasticsearch, Redis, or Varnish. Mailpit is DDEV's mail catcher.
 
@@ -40,8 +40,8 @@ The local `settings.php` case points the Optime migration at `web/modules/custom
 
 ### Remote
 
-Deploy is CircleCI, orb `silta/silta@1`, image `wunderio/silta-cicd:circleci-php8.3-node24-composer2-v1` (`.circleci/config.yml`). Jobs: `validate`, `analyze`, feature `build` / `deploy` (manual approval), `build-master` / `deploy-master`, `build-prod` / `deploy-prod`. The build runs Composer install
-and `silta/npm-install-build`. There is no PHPUnit job and no GitHub Actions workflow besides `.github/dependabot.yml`.
+Deploy is CircleCI, orb `silta/silta@1`, image `wunderio/silta-cicd:circleci-php8.4-node24-composer2-v1` (`.circleci/config.yml`). Jobs: `validate`, `analyze`, feature `build` / `deploy` (manual approval), `build-master` / `deploy-master`, `build-prod` / `deploy-prod`. The build runs Composer install
+and `silta/npm-install-build`. There is no PHPUnit job. GitHub Actions runs Playwright (`.github/workflows/playwright.yml`) in addition to Dependabot.
 
 | Environment | Branch | Config files | Context | Role |
 | --- | --- | --- | --- | --- |

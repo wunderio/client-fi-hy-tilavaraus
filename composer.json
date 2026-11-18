@@ -6,6 +6,7 @@
     "authors": [{"name": "", "role": ""}],
     "repositories": [{"type": "composer", "url": "https://packages.drupal.org/8"}],
     "require": {
+        "php": ">=8.4",
         "composer/installers": "^2.0",
         "cweagans/composer-patches": "^1.6",
         "drupal/admin_toolbar": "^3.0",
@@ -14,8 +15,8 @@
         "drupal/config_readonly": "^1.0",
         "drupal/config_split": "^2.0",
         "drupal/cookieconsent": "^1.4",
-        "drupal/core-composer-scaffold": "^11",
-        "drupal/core-recommended": "^11",
+        "drupal/core-composer-scaffold": "^11.4",
+        "drupal/core-recommended": "^11.4",
         "drupal/ctools": "^4.1",
         "drupal/disable_field": "^3.0",
         "drupal/ds": "^3.13",
@@ -50,8 +51,10 @@
         "wunderio/drupal-ping": "^2.0"
     },
     "require-dev": {
+        "drupal/core-dev": "^11.4",
         "drupal/devel": "^5.0",
-        "drupal/devel_php": "^1.0"
+        "drupal/devel_php": "^1.0",
+        "wunderio/code-quality": "^3.0"
     },
     "conflict": {"drupal/drupal": "*"},
     "minimum-stability": "dev",
@@ -122,16 +125,21 @@
     "config": {
         "process-timeout": 0,
         "platform": {
-            "php": "8.3"
+            "php": "8.4"
         },
         "sort-packages": true,
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "koodimonni/composer-dropin-installer": true,
             "mglaman/composer-drupal-lenient": true,
-            "symfony/runtime": true
+            "php-http/discovery": true,
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true,
+            "tbachert/spi": true
         }
     }
 }
