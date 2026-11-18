@@ -1,4 +1,4 @@
-# Main environment configuration.
+# Master environment configuration.
 #
 # Override the default values of Wunder's Drupal Helm chart and silta.yml.
 # @see: https://github.com/wunderio/charts/blob/master/drupal/values.yaml
@@ -6,5 +6,5 @@
 php:
   cron:
     drupal:
-      # In main environment, run cron once an hour. Adjust as needed.
+      # In the master environment, run cron once an hour. Adjust as needed.
       schedule: '~ * * * *'

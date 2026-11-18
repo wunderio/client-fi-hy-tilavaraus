@@ -5,6 +5,10 @@ global:
       dist/app.css: {}
   js:
     dist/app.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - uh_space/select2
 
 views-exposed-filters:
   js:
@@ -25,4 +29,3 @@ select2:
     lib/selectWoo/dist/js/selectWoo.min.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once

@@ -2,7 +2,7 @@ label: Startsida
 description: 'Allt innehåll som visas på startsidan.'
 display:
   default:
-    display_title: Förvald
+    display_title: Huvud
     display_options:
       pager:
         options:

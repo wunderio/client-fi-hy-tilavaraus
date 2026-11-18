@@ -2,7 +2,7 @@ label: 'Nyligen uppdaterat innehåll'
 description: 'Nytt innehåll.'
 display:
   default:
-    display_title: Förvald
+    display_title: Huvud
     display_options:
       title: 'Nyligen uppdaterat innehåll'
       fields:

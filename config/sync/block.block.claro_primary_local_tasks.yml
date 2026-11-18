@@ -1,5 +1,5 @@
 uuid: 9c23ce82-fba1-460c-a0a7-61db2f31a478
-langcode: en
+langcode: fi
 status: true
 dependencies:
   theme:
@@ -14,7 +14,7 @@ provider: null
 plugin: local_tasks_block
 settings:
   id: local_tasks_block
-  label: 'Primary tabs'
+  label: 'Ensisijaiset välilehdet'
   label_display: '0'
   provider: core
   primary: true

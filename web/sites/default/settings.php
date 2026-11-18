@@ -72,11 +72,13 @@ if (PHP_SAPI === 'cli') {
 }
 
 // Default config_split settings cover feature environments in Silta.
-// Production, main and local overrides are set in the switch below.
-// Be sure to have config_split.local disabled by default.
+// Production, master, dev, stage, and local overrides are set in the switch below.
 $config['config_split.config_split.silta']['status'] = TRUE;
-$config['config_split.config_split.main']['status'] = FALSE;
+$config['config_split.config_split.master']['status'] = FALSE;
 $config['config_split.config_split.local']['status'] = FALSE;
+
+// Feature branches and any environment without its own case.
+$settings['simple_environment_indicator'] = '#5c6b73 Feature';
 
 // Fetch missing files from production on non-production environments.
 $config['stage_file_proxy.settings']['origin'] = 'https://tilavaraus.helsinki.fi';
@@ -112,31 +114,32 @@ switch ($env) {
     $config['simple_sitemap.settings']['base_url'] = 'https://tilavaraus.helsinki.fi';
     // Do not enable stage_file_proxy on production.
     $config['config_split.config_split.silta']['status'] = FALSE;
+    $config['config_split.config_split.master']['status'] = FALSE;
+    $config['config_split.config_split.local']['status'] = FALSE;
     break;
 
-  case 'main':
-    $settings['simple_environment_indicator'] = '#004984 Main';
-    $config['config_split.config_split.main']['status'] = TRUE;
+  case 'master':
+    $settings['simple_environment_indicator'] = '#004984 Master';
+    $config['config_split.config_split.master']['status'] = TRUE;
     $config['config_split.config_split.silta']['status'] = FALSE;
+    $config['config_split.config_split.local']['status'] = FALSE;
     break;
 
   case 'dev':
-    $settings['simple_environment_indicator'] = '#004984 Development';
-    $base_url = "https://opetustila-test.it.helsinki.fi";
+    $settings['simple_environment_indicator'] = '#6f42c1 Dev';
     // Disable config_readonly on dev.
     $settings['config_readonly'] = FALSE;
-    // Enable local split (includes stage_file_proxy) on dev.
-    $config['config_split.config_split.local']['status'] = TRUE;
-    $config['config_split.config_split.silta']['status'] = FALSE;
-    // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-test.it.helsinki.fi';
+    // Remote dev uses the Silta split, not the DDEV local split.
+    $config['config_split.config_split.silta']['status'] = TRUE;
+    $config['config_split.config_split.master']['status'] = FALSE;
+    $config['config_split.config_split.local']['status'] = FALSE;
     break;
 
   case 'stage':
     $settings['simple_environment_indicator'] = '#e56716 Stage';
-    $base_url = "https://opetustila-staging.it.helsinki.fi";
-    // Sitemap settings override.
-    $config['simple_sitemap.settings']['base_url'] = 'https://opetustila-staging.it.helsinki.fi';
+    $config['config_split.config_split.silta']['status'] = TRUE;
+    $config['config_split.config_split.master']['status'] = FALSE;
+    $config['config_split.config_split.local']['status'] = FALSE;
     break;
 
   case 'ddev':
@@ -148,6 +151,7 @@ switch ($env) {
     // Enable local split on local.
     $config['config_split.config_split.local']['status'] = TRUE;
     $config['config_split.config_split.silta']['status'] = FALSE;
+    $config['config_split.config_split.master']['status'] = FALSE;
     // Sitemap settings override.
     $config['simple_sitemap.settings']['base_url'] = 'https://client-fi-hy-tilavaraus.ddev.site';
     $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://client-fi-hy-tilavaraus.ddev.site/modules/custom/migrate_optime_json/data/locations11_example.json';
@@ -172,32 +176,8 @@ $settings['update_free_access'] = FALSE;
  */
 $settings['container_yamls'][] = __DIR__ . '/services.yml';
 
-
-// Override optime migration url per environment. This can be put in settings.local.php
-// $config['migrate_plus.migration.optime_integration']['source']['urls'] = 'https://helpdesk.it.helsinki.fi/sites/default/files/testdata/test_full.json';
-
-// Override optime migration url.
-// dev and prod urls point to:
-//  https://esbmt2.it.helsinki.fi/devel/optime/locations/?fromTimestamp=1 <-- DEV
-//  https://esbmt1.it.helsinki.fi/optime/locations/?fromTimestamp=1 <-- PROD
-// It can also have a a date filter, including only the nodes that have changed after
-// a specific UNIX timestamp.
-//$config['migrate_plus.migration.optime_integration']['source']['urls'] =
-//  'https://esbmt1.it.helsinki.fi/optime/locations/?fromTimestamp=1';
-
-// $import_period = time() - (72 * 3600); // Import last 3 days of changes
-//   $config['migrate_plus.migration.optime_integration']['source']['urls'] =
-//    'https://{optime-url}?fromTimestamp=' . $import_period;
-
-
-// To have optime integration running in any environment, we need this in crontab:
-# Fetch	Optime data every 25mins. This interval	could be made much smaller if/when the importer	contains a dynamic
-# time filter, to limit	the results to items that have updated within a	short timeframe	(such as last import time or last 24h).
-# */25 * * * * cd /var/www/opetustila-test.it.helsinki.fi/current/web/sites/default; /usr/lib/composer/vendor/bin/drush mim optime_integration --update
-
 // Fix warning on Drupal status page.
 $settings['trusted_host_patterns'] = [
-  '^local\.tilat\.fi$',
   '^tilat\.ddev\.site$',
   '^.*\.helsinki\.fi$',
   '^127\.0\.0\.1$',

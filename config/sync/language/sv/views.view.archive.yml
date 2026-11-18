@@ -2,7 +2,7 @@ label: Arkiv
 description: 'Allt innehåll, månadsvis.'
 display:
   default:
-    display_title: Förvald
+    display_title: Huvud
     display_options:
       title: 'Månatligt arkiv'
       pager:
