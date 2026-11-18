@@ -40,7 +40,16 @@ grumphp:
         - '/libraries/'
         - '/contrib/'
         - 'silta/secrets-'
-    json_lint: ~
+    json_lint:
+      # yarn.lock is Yarn's own format. The json_lint task also checks
+      # *.lock, which is correct for composer.lock.
+      ignore_patterns:
+        - '/vendor/'
+        - '/node_modules/'
+        - '/core/'
+        - '/libraries/'
+        - '/contrib/'
+        - 'yarn.lock'
     # PHPUnit will fail with 0 tests.
     phpunit:
       testsuite: unit
