@@ -11,7 +11,7 @@ dependencies:
   module:
     - image
     - path
-    - text_with_summary
+    - text
 id: node.page.default
 targetEntityType: node
 bundle: page

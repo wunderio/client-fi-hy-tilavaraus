@@ -46,9 +46,5 @@ display:
           expose:
             label: Vakavuus
       title: 'Viimeisimmät lokimerkinnät'
-      empty:
-        area:
-          content:
-            value: 'Yhtään lokimerkintää ei ole saatavilla.'
   page:
     display_title: Sivu

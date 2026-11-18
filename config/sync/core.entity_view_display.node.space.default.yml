@@ -32,7 +32,7 @@ dependencies:
     - field_group
     - image
     - link
-    - text_with_summary
+    - text
     - user
 third_party_settings:
   ds:

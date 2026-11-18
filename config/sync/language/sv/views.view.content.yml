@@ -2,7 +2,7 @@ label: Innehåll
 description: 'Hitta och hantera innehåll.'
 display:
   default:
-    display_title: Förvald
+    display_title: Huvud
     display_options:
       title: Innehåll
       fields:

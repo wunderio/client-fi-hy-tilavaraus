@@ -9,6 +9,7 @@ dependencies:
     - field.field.taxonomy_term.price_categories.field_vat_rate
     - taxonomy.vocabulary.price_categories
   module:
+    - layout_discovery
     - link
 id: taxonomy_term.price_categories.default
 targetEntityType: taxonomy_term

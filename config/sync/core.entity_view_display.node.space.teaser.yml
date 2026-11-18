@@ -28,7 +28,7 @@ dependencies:
     - field.field.node.space.field_street_address
     - node.type.space
   module:
-    - text_with_summary
+    - text
     - user
 id: node.space.teaser
 targetEntityType: node

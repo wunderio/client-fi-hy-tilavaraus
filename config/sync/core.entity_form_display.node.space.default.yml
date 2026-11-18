@@ -34,7 +34,6 @@ dependencies:
     - link
     - path
     - text
-    - text_with_summary
 third_party_settings:
   field_group:
     group_optime:

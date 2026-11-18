@@ -11,7 +11,7 @@ dependencies:
     - node.type.page
   module:
     - image
-    - text_with_summary
+    - text
     - user
 id: node.page.teaser
 targetEntityType: node

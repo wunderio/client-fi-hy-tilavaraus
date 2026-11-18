@@ -229,8 +229,6 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
-            min_label: Min
-            max_label: Max
           is_grouped: false
           group_info:
             label: ''
@@ -554,11 +552,11 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
-        - 'search_api_list:spaces_search'
   admin_page:
     id: admin_page
     display_title: 'Space Search Admin Page'
@@ -947,11 +945,11 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
-        - 'search_api_list:spaces_search'
   main:
     id: main
     display_title: 'Search Block'
@@ -971,8 +969,8 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
-        - 'search_api_list:spaces_search'
