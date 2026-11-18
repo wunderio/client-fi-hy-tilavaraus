@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Extends the site information form with service provider and spaces settings.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter() for system_site_information_settings.
+ */
+function uh_space_site_information_form_system_site_information_settings_alter(array &$form, FormStateInterface $form_state) {
+  $config = \Drupal::config('system.site');
+
+  $form['service_provider'] = [
+    '#title' => t('Service Provider settings'),
+    '#type' => 'details',
+    '#open' => TRUE,
+  ];
+  $form['service_provider']['logo_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Logo text'),
+    '#default_value' => $config->get('logo_text'),
+    '#config_target' => 'system.site:logo_text',
+  ];
+  $form['service_provider']['logo_path'] = [
+    '#type' => 'textfield',
+    '#title' => t('Target path from logo link'),
+    '#default_value' => $config->get('logo_path'),
+    '#config_target' => 'system.site:logo_path',
+  ];
+  $form['service_provider']['copyright_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Copyright text'),
+    '#default_value' => $config->get('copyright_text'),
+    '#config_target' => 'system.site:copyright_text',
+  ];
+  $form['service_provider']['contact_info'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contact information'),
+    '#default_value' => $config->get('contact_info'),
+    '#config_target' => 'system.site:contact_info',
+  ];
+
+  $form['spaces'] = [
+    '#title' => t('Spaces settings'),
+    '#type' => 'details',
+    '#open' => TRUE,
+  ];
+  $form['spaces']['spaces_contact_info'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contact information'),
+    '#default_value' => $config->get('spaces_contact_info'),
+    '#config_target' => 'system.site:spaces_contact_info',
+  ];
+}

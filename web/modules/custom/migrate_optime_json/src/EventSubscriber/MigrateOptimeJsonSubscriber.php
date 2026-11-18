@@ -55,28 +55,26 @@ class MigrateOptimeJsonSubscriber implements EventSubscriberInterface {
   public function afterImport(MigrateImportEvent $event) {
     $migration = $event->getMigration();
 
-    if (!empty($migration)) {
-      // After import operation check Equipment taxonomy terms that are not
-      // referenced any more.
-      if ($migration->id() == 'optime_integration') {
-        // Get Equipment taxonomy term tids.
-        $equipment_terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('equipment', 0, 1, FALSE);
-        $equipment_tids = array_map(function ($term) {
-          return $term->tid;
-        }, $equipment_terms);
+    // After import operation check Equipment taxonomy terms that are not
+    // referenced any more.
+    if ($migration->id() == 'optime_integration') {
+      // Get Equipment taxonomy term tids.
+      $equipment_terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('equipment', 0, 1, FALSE);
+      $equipment_tids = array_map(function ($term) {
+        return $term->tid;
+      }, $equipment_terms);
 
-        foreach ($equipment_tids as $tid) {
-          // Check if term is referenced by any of spaces.
-          $nodes = $this->entityTypeManager->getStorage('node')->loadByProperties(['field_equipment' => $tid]);
-          // Delete term if not referenced by any of spaces.
-          if (!$nodes) {
-            // Delete term.
-            $term = Term::load($tid);
-            $this->logger->info('Unused term of "%term_name" deleted from Equipment vocabulary.', ['%term_name' => $term->getName()]);
-            $term->delete();
-            // Invalidate space search view cache.
-            Cache::invalidateTags(['space_search']);
-          }
+      foreach ($equipment_tids as $tid) {
+        // Check if term is referenced by any of spaces.
+        $nodes = $this->entityTypeManager->getStorage('node')->loadByProperties(['field_equipment' => $tid]);
+        // Delete term if not referenced by any of spaces.
+        if (!$nodes) {
+          // Delete term.
+          $term = Term::load($tid);
+          $this->logger->info('Unused term of "%term_name" deleted from Equipment vocabulary.', ['%term_name' => $term->getName()]);
+          $term->delete();
+          // Invalidate space search view cache.
+          Cache::invalidateTags(['space_search']);
         }
       }
     }

@@ -10,8 +10,9 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\taxonomy\Entity\Term;
+use Drupal\node\NodeInterface;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Migrate callback for getting capacity.
@@ -58,59 +59,58 @@ function migrate_optime_json_get_trimmed_part($value = "", $key = 0) {
  * Implements hook_entity_presave().
  */
 function migrate_optime_json_entity_presave(EntityInterface $entity) {
-  switch ($entity->bundle()) {
-    case 'space':
-      // 'Space' node status might be turned off if either Optime or Drupal data says so.
-      // This may still be bit confusing, because the "Publish" checkbox is currently
-      // also visible, but these 2 fields may override it.
-      if (!empty($entity->get('field_inactivated_in_drupal')->value) || !empty($entity->get('field_inactivate_in_optime')->value)) {
-        $entity->setUnpublished();
+  if (!$entity instanceof NodeInterface || $entity->bundle() !== 'space') {
+    return;
+  }
+
+  // 'Space' node status might be turned off if either Optime or Drupal data says so.
+  // This may still be bit confusing, because the "Publish" checkbox is currently
+  // also visible, but these 2 fields may override it.
+  if (!empty($entity->get('field_inactivated_in_drupal')->value) || !empty($entity->get('field_inactivate_in_optime')->value)) {
+    $entity->setUnpublished();
+  }
+
+  // Buildings have a campus reference just like space nodes. Optime migration
+  // auto-creates and references both campus and building terms, but manipulating
+  // building term fields within the migration is messy. Also, we only have a few dozen
+  // buildings, which can be edited manually. But to make path-auto, breadcrumbs etc
+  // work nicely out of box, we can atleast try to set the campus reference,
+  // if its otherwise empty.
+  $campus_tid = $entity->get('field_campus')->target_id;
+  $building_tid = $entity->get('field_building')->target_id;
+
+  if (!empty($campus_tid) && !empty($building_tid)) {
+    $building_term = Term::load($building_tid);
+    // If building has no campus term yet, lets try to set the reference based on space.
+    if (!empty($building_term)) {
+
+      if (empty($building_term->get('field_campus')->target_id)) {
+        $building_term->field_campus->target_id = $campus_tid;
       }
 
-      // Buildings have a campus reference just like space nodes. Optime migration
-      // auto-creates and references both campus and building terms, but manipulating
-      // building term fields within the migration is messy. Also, we only have a few dozen
-      // buildings, which can be edited manually. But to make path-auto, breadcrumbs etc
-      // work nicely out of box, we can atleast try to set the campus reference,
-      // if its otherwise empty.
-      $campus_tid = $entity->get('field_campus')->target_id;
-      $building_tid = $entity->get('field_building')->target_id;
-
-      if (!empty($campus_tid) && !empty($building_tid)) {
-        $building_term = Term::load($building_tid);
-        // If building has no campus term yet, lets try to set the reference based on space.
-        if (!empty($building_term)) {
-
-          if (empty($building_term->get('field_campus')->target_id)) {
-            $building_term->field_campus->target_id = $campus_tid;
-          }
-
-          // Also copy building Id and street address under same conditions.
-          if (empty($building_term->get('field_building_id')->value)) {
-            $building_term->field_building_id->value = $entity->get('field_building_id')->value;
-          }
-
-          if (empty($building_term->get('field_street_address')->value)) {
-            $building_term->field_street_address->value = $entity->get('field_street_address')->value;
-          }
-
-          // We also have a separate address field to store the geolocated address. In most cases the
-          // optime sources address will also allow to autofill an address that can be auto-geolocated,
-          // and usually guesses right even without city.
-          if (empty($building_term->get('field_geolocation_address')->value)) {
-            $building_term->field_geolocation_address->value = $entity->get('field_street_address')->value;
-          }
-
-          // Check if there is a legacy redirect missing which we could add.
-          if (!empty($entity->id())) {
-            migrate_optime_json_legacy_redirect($entity);
-          }
-
-          $building_term->save();
-        }
+      // Also copy building Id and street address under same conditions.
+      if (empty($building_term->get('field_building_id')->value)) {
+        $building_term->field_building_id->value = $entity->get('field_building_id')->value;
       }
 
-      break;
+      if (empty($building_term->get('field_street_address')->value)) {
+        $building_term->field_street_address->value = $entity->get('field_street_address')->value;
+      }
+
+      // We also have a separate address field to store the geolocated address. In most cases the
+      // optime sources address will also allow to autofill an address that can be auto-geolocated,
+      // and usually guesses right even without city.
+      if (empty($building_term->get('field_geolocation_address')->value)) {
+        $building_term->field_geolocation_address->value = $entity->get('field_street_address')->value;
+      }
+
+      // Check if there is a legacy redirect missing which we could add.
+      if (!empty($entity->id())) {
+        migrate_optime_json_legacy_redirect($entity);
+      }
+
+      $building_term->save();
+    }
   }
 }
 

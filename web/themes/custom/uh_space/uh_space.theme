@@ -186,7 +186,8 @@ function uh_space_preprocess_field__ds_field_expert(&$vars) {
 
   // Replace DIY icon definitions in field prefix/suffix with icon SVG contents.
   foreach (['prefix', 'suffix'] as $sibling) {
-    if (!empty($vars['settings'][$sibling]) && $sibling_content = $vars['settings'][$sibling]) {
+    if (!empty($vars['settings'][$sibling])) {
+      $sibling_content = $vars['settings'][$sibling];
       if ($icon_name = _uh_space_filter_icon_name($sibling_content)) {
         $icon = _uh_space_load_icon($icon_name);
 
@@ -209,8 +210,10 @@ function uh_space_preprocess_views_exposed_form(&$vars) {
 
   if ($vars['theme_hook_original'] == 'views_exposed_form__space_search__main') {
     $space_search = Views::getView('space_search');
-    $main = $space_search->getDisplay('main');
-    $vars['title'] = $main->options['title'];
+    if ($space_search) {
+      $space_search->setDisplay('main');
+      $vars['title'] = $space_search->getDisplay()->options['title'];
+    }
   }
 }
 
