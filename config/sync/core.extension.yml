@@ -65,6 +65,7 @@ module:
   taxonomy: 0
   telephone: 0
   text: 0
+  text_with_summary: 0
   token: 0
   toolbar: 0
   translatable_menu_link_uri: 0

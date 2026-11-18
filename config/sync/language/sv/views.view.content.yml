@@ -20,6 +20,9 @@ display:
             format_custom_true: Publicerad
         changed:
           label: Uppdaterad
+        langcode:
+          label: Språk
+          separator: ', '
         operations:
           label: Funktioner
       pager:

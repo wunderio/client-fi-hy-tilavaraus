@@ -7,7 +7,7 @@ dependencies:
     - node.type.space
   module:
     - disable_field
-    - text
+    - text_with_summary
 third_party_settings:
   disable_field:
     add_disable: none
@@ -25,4 +25,5 @@ default_value_callback: ''
 settings:
   display_summary: true
   required_summary: false
+  allowed_formats: {  }
 field_type: text_with_summary

@@ -1,7 +1,7 @@
 name: client-fi-hy-tilavaraus
-type: drupal10
+type: drupal11
 docroot: web
-php_version: "8.3"
+php_version: "8.4"
 webserver_type: nginx-fpm
 xdebug_enabled: false
 additional_hostnames: []
@@ -11,8 +11,19 @@ database:
     version: "11.8"
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+nodejs_version: "24"
+web_environment:
+    - DRUSH_OPTIONS_URI=https://client-fi-hy-tilavaraus.ddev.site
+    - DRUPAL_TEST_DRUPAL_ROOT=/var/www/html/web
+    - TEST_BASE_URL=http://web:80
+    - ENVIRONMENT_NAME=ddev
+    - EXEC_GRUMPHP_COMMAND=ddev php
 corepack_enable: false
+hooks:
+    post-start:
+        - exec: "composer install"
+        - exec: "npm ci"
+        - exec: "npx playwright install --with-deps"
 
 # Key features of DDEV's config.yaml:
 

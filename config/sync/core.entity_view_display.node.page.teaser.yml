@@ -11,13 +11,21 @@ dependencies:
     - node.type.page
   module:
     - image
-    - text
+    - text_with_summary
     - user
 id: node.page.teaser
 targetEntityType: node
 bundle: page
 mode: teaser
 content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
   field_featured_image:
     type: image
     label: hidden
@@ -28,14 +36,6 @@ content:
         attribute: lazy
     third_party_settings: {  }
     weight: 0
-    region: content
-  body:
-    type: text_summary_or_trimmed
-    label: hidden
-    settings:
-      trim_length: 600
-    third_party_settings: {  }
-    weight: 101
     region: content
   links:
     settings: {  }

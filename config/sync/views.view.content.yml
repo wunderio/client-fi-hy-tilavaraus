@@ -135,7 +135,7 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: field
-          label: 'Translation language'
+          label: Kieli
           exclude: false
           alter:
             alter_text: false
@@ -316,13 +316,13 @@ display:
       pager:
         type: full
         options:
+          pagination_heading_level: h4
           items_per_page: 50
           tags:
             next: 'Seuraava ›'
             previous: '‹ Edellinen'
             first: '« Ensimmäinen'
             last: 'Viimeinen »'
-          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:

@@ -6,7 +6,7 @@ dependencies:
     - field.field.node.page.body
     - field.field.node.page.field_featured_image
     - field.field.node.page.field_lead_text
-    - image.style.gallery_image
+    - image.style.space_image_full
     - node.type.page
   module:
     - ds
@@ -44,23 +44,23 @@ targetEntityType: node
 bundle: page
 mode: default
 content:
-  field_featured_image:
-    type: image
-    label: hidden
-    settings:
-      image_link: ''
-      image_style: gallery_image
-      image_loading:
-        attribute: eager
-    third_party_settings: {  }
-    weight: -1
-    region: ds_content
   body:
     type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
     weight: 0
+    region: ds_content
+  field_featured_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: space_image_full
+      image_loading:
+        attribute: eager
+    third_party_settings: {  }
+    weight: -1
     region: ds_content
   links:
     settings: {  }

@@ -86,6 +86,7 @@ display:
         type: mini
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 12
           total_pages: null
           id: 0
@@ -100,7 +101,6 @@ display:
             items_per_page_options_all_label: '- Kaikki -'
             offset: false
             offset_label: Ohita
-          pagination_heading_level: h4
       exposed_form:
         type: input_required
         options:
@@ -229,6 +229,8 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
+            min_label: Min
+            max_label: Max
           is_grouped: false
           group_info:
             label: ''
@@ -552,11 +554,11 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
+        - 'search_api_list:spaces_search'
   admin_page:
     id: admin_page
     display_title: 'Space Search Admin Page'
@@ -945,11 +947,11 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
+        - 'search_api_list:spaces_search'
   main:
     id: main
     display_title: 'Search Block'
@@ -969,8 +971,8 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:search_api.index.spaces_search'
+        - 'search_api_list:spaces_search'

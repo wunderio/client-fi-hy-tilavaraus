@@ -15,7 +15,7 @@ dependencies:
     - field.field.taxonomy_term.building.field_navigation_link
     - field.field.taxonomy_term.building.field_opening_times
     - field.field.taxonomy_term.building.field_street_address
-    - image.style.gallery_image
+    - image.style.space_image_full
     - taxonomy.vocabulary.building
   module:
     - ds
@@ -32,6 +32,7 @@ third_party_settings:
       disable_css: false
       entity_classes: all_classes
       settings:
+        label: ''
         classes:
           layout_class: {  }
           header: {  }
@@ -47,7 +48,6 @@ third_party_settings:
         attributes: ''
         link_attribute: ''
         link_custom: ''
-        label: ''
     regions:
       header:
         - taxonomy_term_title
@@ -212,7 +212,7 @@ content:
     label: hidden
     settings:
       image_link: ''
-      image_style: gallery_image
+      image_style: space_image_full
       image_loading:
         attribute: eager
     third_party_settings:
@@ -266,13 +266,13 @@ content:
       geocoder:
         control: false
         settings:
+          popup: false
           position: topright
           input_size: 25
           providers: {  }
           min_terms: 4
           delay: 800
           zoom: 16
-          popup: false
           options: ''
       fullscreen_control: true
     third_party_settings:

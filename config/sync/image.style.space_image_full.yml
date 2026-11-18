@@ -7,9 +7,9 @@ label: 'Space Image Full'
 effects:
   5f9c7e67-80b8-4ef8-a435-017324772a1d:
     uuid: 5f9c7e67-80b8-4ef8-a435-017324772a1d
-    id: image_scale_and_crop
+    id: image_scale
     weight: 1
     data:
       width: 1440
-      height: 960
-      anchor: center-center
+      height: 1440
+      upscale: false
