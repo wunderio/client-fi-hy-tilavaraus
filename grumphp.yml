@@ -29,7 +29,17 @@ grumphp:
       run_on: '%grumphp.run_on_paths%'
     php_stan:
       run_on: '%grumphp.run_on_paths%'
-    yaml_lint: ~
+    yaml_lint:
+      # OpenSSL-encrypted Silta secrets are not UTF-8 YAML. Parsing them
+      # throws a Symfony ParseException with a null snippet, which crashes
+      # GrumPHP before it can report the file.
+      ignore_patterns:
+        - '/vendor/'
+        - '/node_modules/'
+        - '/core/'
+        - '/libraries/'
+        - '/contrib/'
+        - 'silta/secrets-'
     json_lint: ~
     # PHPUnit will fail with 0 tests.
     phpunit:
