@@ -76,6 +76,8 @@ if (PHP_SAPI === 'cli') {
 $config['config_split.config_split.silta']['status'] = TRUE;
 $config['config_split.config_split.master']['status'] = FALSE;
 $config['config_split.config_split.local']['status'] = FALSE;
+// Removed split. Force it off when the entity is still active in the database.
+$config['config_split.config_split.main']['status'] = FALSE;
 
 // Feature branches and any environment without its own case.
 $settings['simple_environment_indicator'] = '#5c6b73 Feature';
