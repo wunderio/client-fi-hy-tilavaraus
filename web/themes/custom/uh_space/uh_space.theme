@@ -1,19 +1,27 @@
 <?php
 
+/**
+ * @file
+ * Theme preprocess hooks for the UH Space theme.
+ */
+
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Html;
+use Drupal\views\Views;
 
 /**
  * Implements template_preprocess_menu().
  */
 function uh_space_preprocess_menu(&$vars) {
-  $link_class = false;
-  $menu_class = false;
+  $link_class = FALSE;
+  $menu_class = FALSE;
 
   switch ($vars['menu_name']) {
     case 'footer':
       $link_class = 'list-of-links__link button--action icon--arrow-right theme-transparent-alt';
       $menu_class = 'list-of-links--condensed theme-footer';
       break;
+
     case 'site-footer':
       $link_class = 'list-of-links__link button--action icon--arrow-right theme-transparent-alt';
       $menu_class = 'list-of-links--condensed theme-info-footer';
@@ -28,7 +36,7 @@ function uh_space_preprocess_menu(&$vars) {
     foreach ($vars['items'] as &$item) {
       $item['attributes']->addClass($link_class);
 
-      // we want a different active-class than what drupal provides.
+      // We want a different active class than what Drupal provides.
       $current_path = \Drupal::request()->getRequestUri();
 
       if ($item['url']->toString() == $current_path) {
@@ -82,12 +90,14 @@ function uh_space_preprocess_region(&$variables) {
       $variables['logo_text'] = \Drupal::config('system.site')->get('logo_text');
       $variables['logo'] = _uh_space_load_wrapped_icon('helsinginyliopisto');
       break;
+
     case 'footer':
       $variables['logo_path'] = \Drupal::config('system.site')->get('logo_path');
       $variables['logo_text'] = \Drupal::config('system.site')->get('logo_text');
       $variables['copyright_text'] = \Drupal::config('system.site')->get('copyright_text');
       $variables['contact_info'] = \Drupal::config('system.site')->get('contact_info');
       break;
+
     case 'footer_site':
       $variables['spaces_contact_info'] = \Drupal::config('system.site')->get('spaces_contact_info');
       break;
@@ -105,9 +115,11 @@ function uh_space_preprocess_status_messages(&$variables) {
       case 'status':
         $icon = _uh_space_load_wrapped_icon('done');
         break;
+
       case 'warning':
         $icon = _uh_space_load_wrapped_icon('warning');
         break;
+
       case 'error':
         $icon = _uh_space_load_wrapped_icon('alert');
         break;
@@ -125,10 +137,13 @@ function uh_space_preprocess_status_messages(&$variables) {
  */
 function uh_space_preprocess_links__language_block(&$variables) {
   foreach ($variables['links'] as $langcode => &$link) {
-    // add classes for theming
+    // Add classes for theming.
     $link['link']['#options']['attributes']['class'][] = 'links__link theme-language';
-    $link['link']['#title'] = new FormattableMarkup('<abbr title="@title">@langcode</abbr>', array('@title' => $link['link']['#title'], '@langcode' => $langcode ));
-    // hide active language
+    $link['link']['#title'] = new FormattableMarkup('<abbr title="@title">@langcode</abbr>', [
+      '@title' => $link['link']['#title'],
+      '@langcode' => $langcode,
+    ]);
+    // Hide the active language.
     $active_language = Drupal::languageManager()->getCurrentLanguage()->getId();
     if ($active_language == $langcode) {
       unset($variables['links'][$langcode]);
@@ -141,7 +156,7 @@ function uh_space_preprocess_links__language_block(&$variables) {
  */
 function uh_space_preprocess_taxonomy_term(&$vars) {
   $bundle = $vars['term']->bundle();
-  $bundle_class = \Drupal\Component\Utility\Html::getClass($bundle);
+  $bundle_class = Html::getClass($bundle);
 
   $vars['attributes']['class'][] = 'taxonomy-term';
   $vars['attributes']['class'][] = "taxonomy-term--{$bundle_class}";
@@ -163,13 +178,13 @@ function uh_space_preprocess_field(&$vars, $hook) {
  * Implements template_preprocess_field__ds_field_expert().
  */
 function uh_space_preprocess_field__ds_field_expert(&$vars) {
-  // Make label translatable & wrap with h2 instead of div
+  // Make the label translatable and wrap it with h2 instead of div.
   if ($vars['field_name'] == 'dynamic_block_field:taxonomy_term-building_spaces_view') {
     $vars['label']['#markup'] = t('Space list');
     $vars['settings']['lbw-el'] = 'h2';
   }
 
-  // Replace DIY icon definitions in field prefix/suffix with icon SVG contents
+  // Replace DIY icon definitions in field prefix/suffix with icon SVG contents.
   foreach (['prefix', 'suffix'] as $sibling) {
     if (!empty($vars['settings'][$sibling]) && $sibling_content = $vars['settings'][$sibling]) {
       if ($icon_name = _uh_space_filter_icon_name($sibling_content)) {
@@ -193,7 +208,7 @@ function uh_space_preprocess_views_exposed_form(&$vars) {
   }
 
   if ($vars['theme_hook_original'] == 'views_exposed_form__space_search__main') {
-    $space_search = Drupal\views\Views::getView('space_search');
+    $space_search = Views::getView('space_search');
     $main = $space_search->getDisplay('main');
     $vars['title'] = $main->options['title'];
   }
@@ -251,7 +266,7 @@ function uh_space_preprocess_search_api_autocomplete_suggestion(&$vars) {
  * Implements hook_preprocess_HOOK().
  */
 function uh_space_preprocess_block(&$variables) {
-  // Make label translatable
+  // Make the label translatable.
   if ($variables['elements']['#id'] == 'views_block__space_navigation_campus_list') {
     $variables['label']['#markup'] = t('Campus List');
   }
@@ -268,7 +283,7 @@ function _uh_space_load_wrapped_icon($icon_name) {
  * Helper for wrapping SVG icon in a standard way.
  */
 function _uh_space_wrap_icon($icon, $icon_name) {
-  $icon_clean = preg_replace( "/\<\?xml.+\?\>/", "", $icon);
+  $icon_clean = preg_replace("/\<\?xml.+\?\>/", "", $icon);
   $icon_wrapped = "<div class='svg-icon svg-icon--{$icon_name}' role='presentation' aria-hidden='true'>{$icon_clean}</div>";
 
   return $icon_wrapped;
@@ -291,7 +306,7 @@ function _uh_space_load_icon($icon_name) {
     }
   }
 
-  return false;
+  return FALSE;
 }
 
 /**
@@ -303,5 +318,5 @@ function _uh_space_filter_icon_name($source) {
     return $matches[1];
   }
 
-  return false;
+  return FALSE;
 }

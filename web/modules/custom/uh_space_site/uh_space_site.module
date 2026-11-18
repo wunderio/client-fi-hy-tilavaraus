@@ -1,12 +1,15 @@
 <?php
 
-use \Drupal\Core\Entity\EntityInterface;
-use \Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+/**
+ * @file
+ * Primary module hooks for the UH Space site module.
+ */
+
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 
 /**
- *  Implements hook_theme().
+ * Implements hook_theme().
  */
 function uh_space_site_theme($existing, $type, $theme, $path) {
   return [
@@ -51,7 +54,7 @@ function uh_space_site_ds_pre_render_alter(&$layout_render_array, $context, &$va
   }
 
   if ($context['bundle'] == 'space' && $context['view_mode'] == 'full') {
-    // Unset building equipment information if space equipment information is set.
+    // Unset building equipment when space equipment is set.
     if (!empty($layout_render_array['left']['group_equipment']['field_equipment_information']['#items'])) {
       unset($layout_render_array['left']['group_equipment']['ds_chains:node/space/field_building/field_equipment_information']);
     }
@@ -85,7 +88,7 @@ function uh_space_site_views_query_alter($view, $query) {
 }
 
 /**
- * Implements uh_space_site_system_breadcrumb_alter().
+ * Implements hook_system_breadcrumb_alter().
  */
 function uh_space_site_system_breadcrumb_alter(&$breadcrumb, $route_match, $context) {
   $links = $breadcrumb->getLinks();
@@ -120,7 +123,10 @@ function uh_space_site_form_alter(&$form, &$form_state, $form_id) {
 
       // Load first level campus terms.
       $campus_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('campus', 0, 1, FALSE);
-      $campus_tids = array_map(function($term) { return $term->tid; }, $campus_terms);
+      $campus_tids = [];
+      foreach ($campus_terms as $term) {
+        $campus_tids[] = $term->tid;
+      }
 
       // Remove options that aren't first level campus TIDs.
       foreach ($tids as $tid) {
@@ -134,8 +140,7 @@ function uh_space_site_form_alter(&$form, &$form_state, $form_id) {
       }
     }
 
-    // Change capacity field type to number and set minimum value to 0
-
+    // Change capacity field type to number and set minimum value to 0.
     $form['field_capacity']['#type'] = 'number';
     $form['field_capacity']['#min'] = 0;
   }
@@ -165,7 +170,7 @@ function uh_space_site_language_switch_links_alter(array &$links, $type, Url $ur
   foreach ($links as $langcode => &$link) {
 
     // Do not show "Svenska" on FI and EN pages until Swedish content is ready.
-    // @todo: remove this if once the Swedish content is ready to be published.
+    // @todo Remove this if once the Swedish content is ready to be published.
     if ($langcode == 'sv' && $language_interface->getId() != 'sv') {
       unset($links[$langcode]);
     }
