@@ -68,8 +68,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Sensitive deployment files
-silta/*.secrets
+# Sensitive deployment files (SOPS-encrypted Kubernetes Secrets)
+k8s/*/secrets/
 
 # Package lock files (large files with minimal value for indexing)
 composer.lock

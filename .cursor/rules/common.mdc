@@ -128,10 +128,8 @@ When creating commit messages, always analyze the actual changes using `git diff
   - DDEV for local development (containerized environment with Nginx, PHP, MariaDB)
     - Additional services: Adminer, Mailpit
     - Configuration in @.ddev/config.yaml and related service files
-  - Silta deployment system (Wunder's Kubernetes deployment solution) [@wunderio/silta](https://github.com/wunderio/silta)
-  - Helm charts for Kubernetes orchestration
-  - Docker containerization (Nginx and PHP containers)
-  - Google Cloud Platform (GCP) infrastructure
+  - Silta Drupal Helm chart, deployed by ArgoCD from @k8s/ (staging and production on UpCloud Silta clusters)
+  - Docker containerization (Nginx, PHP and shell images built from @silta/*.Dockerfile)
   - Kubernetes-based autoscaling (2-5 replicas in production)
   - Varnish caching (configurable)
-  - CircleCI for continuous integration
+  - GitHub Actions for continuous integration and image builds (@.github/workflows/build.yml)
