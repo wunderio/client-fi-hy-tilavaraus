@@ -13,16 +13,14 @@ _Note:_ Site uses Style Guide fork from here: git@github.com:wunderio/Styleguide
 
 #### Compiling frontend assets
 1. Setting up
-    1. Go to the theme folder with `cd drupal/web/themes/custom/uh_space`.
-    2. Ensure that you are using node version <= 8.4.0 & npm
-    3. Run `lando npm install`.
-    4. If you get errors from node-sass saying that the current environment is not yet supported, please remove the node_modules folder with rm -rf node_modules in the theme folder. Then try running “npm install” again. This happens, because sometimes npm install fails to install the required node-sass native extensions.
+    1. Go to the theme folder with `cd web/themes/custom/uh_space`.
+    2. Use Node.js 22.22.3+, 24.15+ or 26+ (what cssnano 9 supports) and npm (`ddev npm` works too). The theme uses npm: `package-lock.json` is the only lockfile.
+    3. Run `npm ci`.
 2. Compiling frontend assets
-    1. Run `lando npm run watch` to build development-friendly frontend files with auto-rebuild (watch).
-    2. Run `lando npm run build` to build production-ready frontend files without auto-rebuild.
+    1. Run `npm run watch` to build development-friendly frontend files with auto-rebuild (watch).
+    2. Run `npm run build` to build production-ready frontend files without auto-rebuild.
 
-#### Rebuilding sass
-Rebuild node-sass if needed when changing different environment - `npm rebuild node-sass`
+The build is webpack 5 with Dart Sass (`sass`). Glob imports such as `@import "drupal/**/*"` are handled by `sass-glob-importer.js`. `sass` is pinned to `~1.91.0`: from 1.92 on, Dart Sass emits declarations that follow nested rules in source order, which changes the cascade in the styleguide.
 
 #### Compiling frontend assets
 Before committing changes, please run `npm run build`.
