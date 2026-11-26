@@ -49,11 +49,10 @@ Feature deploys wait for the `approve-deployment` job. Master cron is hourly (`s
 Drush aliases are in `drush/sites/self.site.yml`:
 
 - Local: `ddev drush`
-- Current feature environment: `drush @current st`
 - Master: `drush @master st`
 - Production: `drush @prod st`
 
-The master alias host is `master-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.dev.wdr.io`. Production uses `production-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.finland.wdr.io`. The public URL of the master environment is not set in `silta/silta-master.yml`.
+The master alias host is `master-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.dev.silta.cloud`. Production uses `production-shell.client-fi-hy-tilavaraus` via `www-admin@ssh.prod.silta.cloud`. These are the ArgoCD environments (see "ArgoCD deployment").
 
 The admin bar colors are set in `settings.php`:
 
@@ -104,3 +103,130 @@ Refs: path/to/file.php
 ```
 
 GrumPHP checks that the subject starts with a ticket id, a colon, and a space. Types used in this project: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`.
+
+<!-- silta-migrate:begin -->
+## ArgoCD deployment
+
+Projects created from this template deploy with ArgoCD; there is no CircleCI deployment.
+The platform side lives in the Silta ArgoCD platform.
+
+- `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
+- `.github/workflows/build.yml` builds the images on each push to a branch with an overlay
+  here, pushes them to `registry.wdr.io/<repository>/` and commits the new tags to
+  `k8s/<overlay>/values/drupal.yaml`. ArgoCD deploys that commit. Other branches and pull
+  requests are validated only.
+
+Add `k8s/develop/` or `k8s/production/` (copies of `k8s/staging/`) to deploy the `develop` or
+`production` branch too. CI updates the tags of `main`/`master`, `develop`, `production` and pull
+request branches, so a release is a merge to `production`: CI builds the `production` images,
+commits their tags to `k8s/production/values/` and ArgoCD deploys that commit. Until
+`k8s/production/` exists, `production` builds no images. To set production tags
+by hand instead, remove `production: "true"` from `build.yml`. Every project needs
+`k8s/staging/apps.yaml` on `main`/`master`: the staging environment creates the project's ArgoCD
+project.
+
+_From the ArgoCD section of the [wunderio/drupal-project](https://github.com/wunderio/drupal-project) template, commit `6e220badb0a3`; the environments, Secrets and cutover below are this site's (silta-migrate)._
+
+### Environments
+
+CircleCI keeps deploying to GKE until the cutover.
+
+| Branch | ArgoCD environment | Cluster | URL |
+| --- | --- | --- | --- |
+| `master` | staging | silta-dev-upc | https://master-client-fi-hy-tilavaraus.dev.silta.cloud |
+| `production` | production | silta-prod-c | https://production-client-fi-hy-tilavaraus.prod.silta.cloud, https://tilavaraus.helsinki.fi |
+
+Each `k8s/<overlay>/values/drupal.yaml` is the environment's `silta/` files ported to ArgoCD, with the image maps laid out as in the template; the rewrites applied are listed at its top.
+
+### Drush and SSH
+
+`drush/sites/self.site.yml` has aliases for the ArgoCD environments: `drush @main st` (staging, on
+the dev cluster) and `drush @production st` (once `k8s/production/` exists). Change `main` to
+`master` there if that is the staging branch. Shell access works for the repository's
+collaborators with push access:
+
+```bash
+ssh www-admin@main-shell.<namespace> -J www-admin@ssh.dev.silta.cloud
+ssh www-admin@pr-<N>-shell.<namespace> -J www-admin@ssh.dev.silta.cloud
+ssh www-admin@production-shell.<namespace> -J www-admin@ssh.prod.silta.cloud
+```
+
+`<namespace>` is the repository name in lowercase. Staging is at `https://main-<project>.dev.silta.cloud`
+and a pull request preview at `https://pr-<N>-<project>.dev.silta.cloud`; the pull request gets a
+comment with its URL.
+
+### Secrets
+
+Put Kubernetes Secrets in `k8s/<overlay>/secrets/<name>.sops.yaml`, encrypt them, and set
+`secrets.enabled: true` in that overlay's `apps.yaml`. `.sops.yaml` encrypts them to the shared
+tenant key, which only ArgoCD can decrypt:
+
+```bash
+sops --encrypt --in-place k8s/staging/secrets/app.sops.yaml
+```
+
+A file may hold only `apiVersion: v1`, `kind: Secret` objects in the project's namespace;
+anything else fails the deployment. Never commit a decrypted file.
+
+This site's Secrets, by key name (`migrate.py secrets` writes them; values never go in git):
+
+```yaml
+# k8s/staging/secrets/secrets.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: client-fi-hy-tilavaraus-secrets
+  namespace: client-fi-hy-tilavaraus
+stringData:
+  OPTIME_API_KEY: "<value>"
+  OPTIME_URL: "<value>"
+  WARDEN_TOKEN: "<value>"
+---
+# k8s/staging/secrets/mariadb.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: master-mariadb
+  namespace: client-fi-hy-tilavaraus
+stringData:
+  mariadb-root-password: "<value>"
+  mariadb-password: "<value>"
+---
+# k8s/staging/secrets/basicauth.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: master-basicauth
+  namespace: client-fi-hy-tilavaraus
+stringData:
+  .htaccess: "<value>"
+---
+# k8s/production/secrets/secrets.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: client-fi-hy-tilavaraus-secrets
+  namespace: client-fi-hy-tilavaraus
+stringData:
+  OPTIME_API_KEY: "<value>"
+  OPTIME_URL: "<value>"
+  WARDEN_TOKEN: "<value>"
+---
+# k8s/production/secrets/mariadb.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: production-mariadb
+  namespace: client-fi-hy-tilavaraus
+stringData:
+  mariadb-root-password: "<value>"
+  mariadb-password: "<value>"
+```
+
+### Cutover
+
+1. Merge to the environment's branch only once its Secrets are in `k8s/<overlay>/secrets/`.
+2. Copy the database and files to the new environment, then check the site on its temporary URL.
+3. Point DNS (or the CDN backend) for the site's domains at the UpCloud cluster.
+4. Remove the CircleCI deploy jobs and `silta/` files that nothing uses any more.
+<!-- silta-migrate:end -->
