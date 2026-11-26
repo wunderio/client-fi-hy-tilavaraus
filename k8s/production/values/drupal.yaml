@@ -13,7 +13,7 @@
 php:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/php
-    tag: master-20261126T122922-162e952
+    tag: production-20261126T125911-86fd16a
   drupalCoreVersion: "11"
   cron:
     drupal:
@@ -51,7 +51,7 @@ php:
 nginx:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/nginx
-    tag: master-20261126T122919-162e952
+    tag: production-20261126T125910-86fd16a
   resources:
     requests:
       cpu: 50m
@@ -84,7 +84,7 @@ nginx:
 shell:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/shell
-    tag: master-20261126T122922-162e952
+    tag: production-20261126T125910-86fd16a
   # In place: the live claim production-ssh-keys2 is 1M. The platform's base values set 1Gi, and
   # silta-shared cannot expand a claim, so the takeover's sync would fail on the resize.
   mount:
