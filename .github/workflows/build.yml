@@ -21,8 +21,10 @@ permissions:
   contents: read
 
 env:
-  # Must match the image repositories in k8s/*/values/, which ArgoCD pulls from.
-  REGISTRY: registry.wdr.io
+  # The Harbor host (organization secret REGISTRY_HOST, a bare hostname). It must match the
+  # image repositories in k8s/*/values/ (registry.wdr.io), which ArgoCD pulls from. As a
+  # secret it shows as *** in the logs.
+  REGISTRY: ${{ secrets.REGISTRY_HOST }}
 
 jobs:
   # ---------------------------------------------------------------
@@ -211,7 +213,7 @@ jobs:
             context: .
     steps:
       - name: Build & push image
-        uses: wunderio/argocd-silta-actions/build-push-image@v1
+        uses: wunderio/argocd-actions/build-push-image@v2
         with:
           artifact-name: built-codebase
           image-name: ${{ matrix.target.name }}
@@ -241,7 +243,7 @@ jobs:
           private-key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
 
       - name: Update image tags
-        uses: wunderio/argocd-silta-actions/update-image-tags@v1
+        uses: wunderio/argocd-actions/update-image-tags@v2
         with:
           image-names: "php nginx shell"
           values-file: values/drupal.yaml
