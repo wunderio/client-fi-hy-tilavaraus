@@ -78,11 +78,16 @@ jobs:
         env:
           SONAR_HOST: ${{ secrets.SONAR_HOST }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: >-
-          sonar-scanner -Dsonar.host.url="${SONAR_HOST}"
-          -Dsonar.token="${SONAR_TOKEN}"
-          -Dsonar.projectKey="client-fi-hy-tilavaraus"
-          -Dsonar.sources='web'
+        # SONAR_HOST may be a bare hostname; the scanner needs a URL.
+        run: |
+          case "$SONAR_HOST" in
+            http://*|https://*) url="$SONAR_HOST" ;;
+            *) url="https://$SONAR_HOST" ;;
+          esac
+          sonar-scanner -Dsonar.host.url="$url" \
+            -Dsonar.token="${SONAR_TOKEN}" \
+            -Dsonar.projectKey="client-fi-hy-tilavaraus" \
+            -Dsonar.sources='web'
 
   # ---------------------------------------------------------------
   # Install production dependencies and build assets.
