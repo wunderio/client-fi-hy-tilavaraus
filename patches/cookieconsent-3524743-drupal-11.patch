@@ -1,0 +1,14 @@
+diff --git a/cookieconsent.info.yml b/cookieconsent.info.yml
+index cbb5d399ef218593d7f3edf688c6a15cb8d7fa16..8510cc18a0db4fbc25e77c9d61825957b2f7215c 100644
+--- a/cookieconsent.info.yml
++++ b/cookieconsent.info.yml
+@@ -1,7 +1,6 @@
+ name: CookieConsent
+ type: module
+ description: CookieConsent uses the Cookie Consent javascript library for alerting users about the use of cookies on your website
+-core: 8.x
+-core_version_requirement: ^8 || ^9
++core_version_requirement: ^10 || ^11
+ package: Other
+ configure: cookieconsent.cookieconsent_admin_form
+\ No newline at end of file

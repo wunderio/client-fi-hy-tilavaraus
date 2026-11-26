@@ -1,0 +1,18 @@
+---
+# ArgoCD (the Silta ArgoCD platform): the master branch is the "staging" environment on the UpCloud dev cluster
+# (silta-dev-upc).
+# From k8s/staging/apps.yaml of wunderio/drupal-project (6e220badb0a3), written by silta-migrate.
+
+# Must equal the repository name in lowercase, or rendering fails.
+namespace: client-fi-hy-tilavaraus
+
+apps:
+  - name: drupal
+    chart: drupal
+    repoURL: oci://registry.wdr.io/charts
+    version: ">=1.44.0"
+    valuesFile: values/drupal.yaml
+
+# Decrypts k8s/staging/secrets/*.sops.yaml (tenant age key) into Secrets in the namespace.
+secrets:
+  enabled: true

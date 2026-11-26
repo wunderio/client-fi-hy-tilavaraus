@@ -69,62 +69,12 @@ workflows:
           filters:
             <<: *ignored-branches
 
-      # Build job for the master environment.
-      - silta/drupal-build:
-          <<: *build
-          name: build-master
-          requires:
-            - validate
-            - analyze
-          filters:
-            branches:
-              only:
-                - master
-
-      # Deploy job for the master environment.
-      # Extends the job defined for feature environments.
-      - silta/drupal-deploy:
-          <<: *deploy
-          name: deploy-master
-          silta_config: silta/silta.yml,silta/silta-master.yml,silta/secrets-dev.yml
-          pre-release:
-            - silta/decrypt-files:
-                files: silta/secrets-dev.yml
-          requires:
-            - build-master
-          filters:
-            branches:
-              only:
-                - master
-
-      # Build job for production environment.
-      # Extends the job defined for feature environments.
-      - silta/drupal-build:
-          <<: *build
-          name: build-prod
-          context: silta_prod_c_hy_tilavaraus
-          requires:
-            - validate
-            - analyze
-          filters:
-            branches:
-              only: production
-
-      # Deploy job for production environment.
-      # Extends the job defined for feature environments.
-      - silta/drupal-deploy:
-          <<: *deploy
-          name: deploy-prod
-          silta_config: silta/silta.yml,silta/silta-prod.yml,silta/secrets-prod.yml
-          pre-release:
-            - silta/decrypt-files:
-                files: silta/secrets-prod.yml
-          context: silta_prod_c_hy_tilavaraus
-          requires:
-            - build-prod
-          filters:
-            branches:
-              only: production
+      # master and production deploy with ArgoCD (k8s/, README.md "ArgoCD
+      # deployment"): no build-master/deploy-master or build-prod/deploy-prod
+      # here, so the merge that hands a release over to ArgoCD does not also
+      # start a Helm upgrade of it. A branch keeps CircleCI's deploy until
+      # this file reaches it: production deploys from CircleCI until master
+      # is merged into production.
 
       # This enables validation on dependabot PRs
       # Build job for dependabot environments.
