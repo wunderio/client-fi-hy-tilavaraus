@@ -12,7 +12,7 @@
 php:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/php
-    tag: feature-HYTV-233-remove-circleci-20261126T165036-1130b6a
+    tag: feature-HYTV-233-remove-circleci-20261126T173816-6dce2db
   drupalCoreVersion: "11"
   cron:
     drupal:
@@ -41,14 +41,14 @@ php:
 nginx:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/nginx
-    tag: feature-HYTV-233-remove-circleci-20261126T165036-1130b6a
+    tag: feature-HYTV-233-remove-circleci-20261126T173814-6dce2db
   basicauth:
     enabled: true
     existingSecret: master-basicauth
 shell:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/shell
-    tag: feature-HYTV-233-remove-circleci-20261126T165034-1130b6a
+    tag: feature-HYTV-233-remove-circleci-20261126T173814-6dce2db
 projectName: Tilavaraus
 referenceData:
   referenceEnvironment: master
