@@ -129,7 +129,8 @@ mariadb:
 mounts:
   public-files:
     enabled: true
-    storage: 10G
+    # Grown from the live 10G after the ArgoCD takeover (9.1 GiB used); nfs-shared expands a claim in place.
+    storage: 15G
     mountPath: /app/web/sites/default/files
     storageClassName: nfs-shared
   private-files:
