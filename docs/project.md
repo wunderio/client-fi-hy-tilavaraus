@@ -51,8 +51,7 @@ and `silta/npm-install-build`. There is no PHPUnit job. GitHub Actions runs Play
 
 `silta/silta.yml` sets `projectName: Tilavaraus`, `php.drupalCoreVersion: "11"`, and `referenceData.referenceEnvironment: master`.
 
-Drush aliases (`drush/sites/self.site.yml`): `local`, `current`, `master`, `prod`. `drush/Commands/SiltaAliasAlterCommands.php` fills `@current`, `@master`, and `@prod` from the git remote name `client-fi-hy-tilavaraus` and the Silta project name. `@master` uses `master-shell.client-fi-hy-tilavaraus`
-through `ssh.dev.wdr.io`. `@prod` uses `production-shell.client-fi-hy-tilavaraus` through `ssh.finland.wdr.io`.
+Drush aliases (`drush/sites/self.site.yml`): `local`, `master`, `prod`. `drush/Commands/SiltaAliasAlterCommands.php` fills `${REPOSITORY}` from the git remote name `client-fi-hy-tilavaraus`. `@master` uses `master-shell.client-fi-hy-tilavaraus` through `ssh.dev.silta.cloud`. `@prod` uses `production-shell.client-fi-hy-tilavaraus` through `ssh.prod.silta.cloud`.
 
 Secret files `silta/secrets-dev.yml` and `silta/secrets-prod.yml` are OpenSSL-encrypted. Key names inside them are not readable. `settings.php` reads `ENVIRONMENT_NAME`, `WARDEN_TOKEN`, `OPTIME_URL`, and `OPTIME_API_KEY`.
 

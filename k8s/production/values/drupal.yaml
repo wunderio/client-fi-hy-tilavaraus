@@ -1,0 +1,196 @@
+---
+# drupal chart values: production -> "production" on the UpCloud prod cluster.
+# Image maps as in k8s/staging/values/drupal.yaml of wunderio/drupal-project (6e220badb0a3); every other value is the site's.
+# Ported from silta/silta.yml + silta/silta-prod.yml (CircleCI on silta-prod-c: the merge takes this release over in place). Rewrites applied by silta-migrate:
+# - images: CI builds into registry.wdr.io with a placeholder tag (its first push sets it); FROM-only Dockerfiles pinned by digest (php.image, nginx.image, shell.image)
+# - kept in place: the running release's claims were made with these storage classes, and another class would give ArgoCD new, empty volumes (mounts.public-files.storageClassName, mounts.private-files.storageClassName)
+# - kept in place as the silta config sets them (the live claims' size) (mounts.private-files.storage, mounts.public-files.storage, mariadb.master.persistence.size)
+# - values from the secrets file: secretKeyRef to Secret client-fi-hy-tilavaraus-secrets (php.env.OPTIME_API_KEY, php.env.OPTIME_URL, php.env.WARDEN_TOKEN)
+# - data service reads an existing Secret, so ArgoCD's renders do not generate new random passwords (production-mariadb)
+# - off: a letsencrypt (HTTP-01) certificate cannot issue while DNS points at GKE, and ArgoCD syncs the Deployments only once every Certificate is healthy; Fastly terminates these domains' TLS and connects to the cluster's origin name, which has the wildcard certificate. The defaults' ssl is off too: the frontend chart's ingress template merges the defaults into each domain in place, which turns a domain's `enabled: false` back on. Turn a domain's ssl back on (`enabled: true`) only when DNS points here without Fastly (exposeDomains.tilavaraus-fi.ssl, exposeDomainsDefaults.ssl.enabled)
+# - off for the migration: a new environment's empty database would get the reference data before `data` copies the site's (drupal >=1.44.0 imports it only into an empty database, so it can go back on after the cutover) (referenceData.enabled)
+
+php:
+  image:
+    repository: registry.wdr.io/client-fi-hy-tilavaraus/php
+    tag: production-00000000T000000-0000000
+  drupalCoreVersion: "11"
+  cron:
+    drupal:
+      schedule: '*/5 * * * *'
+  php_ini:
+    extraConfig: |
+      ; php2shell CVE-2026-109618 / CVE-2026-109619 mitigation. Remove once PHP is patched.
+      [Session]
+      session.upload_progress.enabled = Off
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256M
+    limits:
+      cpu: 500m
+      memory: 512M
+  env:
+    DRUSH_OPTIONS_URI: https://tilavaraus.helsinki.fi
+    OPTIME_API_KEY:
+      valueFrom:
+        secretKeyRef:
+          name: client-fi-hy-tilavaraus-secrets
+          key: OPTIME_API_KEY
+    OPTIME_URL:
+      valueFrom:
+        secretKeyRef:
+          name: client-fi-hy-tilavaraus-secrets
+          key: OPTIME_URL
+    WARDEN_TOKEN:
+      valueFrom:
+        secretKeyRef:
+          name: client-fi-hy-tilavaraus-secrets
+          key: WARDEN_TOKEN
+  errorLevel: hide
+nginx:
+  image:
+    repository: registry.wdr.io/client-fi-hy-tilavaraus/nginx
+    tag: production-00000000T000000-0000000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 50M
+    limits:
+      cpu: 100m
+      memory: 150M
+  noauthips:
+    fastly0: 23.235.32.0/20
+    fastly1: 43.249.72.0/22
+    fastly2: 103.244.50.0/24
+    fastly3: 103.245.222.0/23
+    fastly4: 103.245.224.0/24
+    fastly5: 104.156.80.0/20
+    fastly6: 140.248.64.0/18
+    fastly7: 140.248.128.0/17
+    fastly8: 146.75.0.0/17
+    fastly9: 151.101.0.0/16
+    fastly10: 157.52.64.0/18
+    fastly11: 167.82.0.0/17
+    fastly12: 167.82.128.0/20
+    fastly13: 167.82.160.0/20
+    fastly14: 167.82.224.0/20
+    fastly15: 172.111.64.0/18
+    fastly16: 185.31.16.0/22
+    fastly17: 199.27.72.0/21
+    fastly18: 199.232.0.0/16
+  basicauth:
+    enabled: false
+shell:
+  image:
+    repository: registry.wdr.io/client-fi-hy-tilavaraus/shell
+    tag: production-00000000T000000-0000000
+  # In place: the live claim production-ssh-keys2 is 1M. The platform's base values set 1Gi, and
+  # silta-shared cannot expand a claim, so the takeover's sync would fail on the resize.
+  mount:
+    storage: 1M
+projectName: Tilavaraus
+referenceData:
+  referenceEnvironment: master
+  updateAfterDeployment: false
+  enabled: false
+mailpit:
+  enabled: false
+mariadb:
+  master:
+    persistence:
+      size: 5Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 500Mi
+      limits:
+        memory: 750Mi
+        cpu: 1000m
+    config: |-
+      [mysqld]
+      skip-name-resolve
+      explicit_defaults_for_timestamp
+      basedir=/opt/bitnami/mariadb
+      plugin_dir=/opt/bitnami/mariadb/plugin
+      port=3306
+      socket=/opt/bitnami/mariadb/tmp/mysql.sock
+      tmpdir=/opt/bitnami/mariadb/tmp
+      max_allowed_packet=256M
+      bind-address=0.0.0.0
+      pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
+      log-error=/opt/bitnami/mariadb/logs/mysqld.log
+      character-set-server=UTF8
+      collation-server=utf8_unicode_ci
+      transaction-isolation=READ-COMMITTED
+      # Default max_connections value is 150.
+      # Each active connection consumes approx. 19-20MB of memory.
+      # Consider adding additional memory for production requests/limits when scaling up.
+      max_connections=200
+      # Set innodb_buffer_pool_size to 70/80% of resources.requests.memory (500Mi).
+      innodb_buffer_pool_size=375Mi
+      innodb_log_buffer_size=8M
+      # Set innodb_log_file_size to 12.5% of innodb_buffer_pool_size (47Mi is 12.5% of 375Mi).
+      innodb_log_file_size=47Mi
+      innodb_lock_wait_timeout=120
+      innodb_open_files=49152
+      innodb_flush_log_at_trx_commit=2
+      innodb_flush_method=O_DIRECT
+      table_open_cache=4000
+      table_definition_cache=1000
+      back_log=2048
+      tmp_table_size=64M
+      max_heap_table_size=32M
+      join_buffer_size=2M
+      # have_query_cache=NO
+      performance_schema=1
+      innodb_write_io_threads=16
+      innodb_use_native_aio=0
+      # Undo Log Truncation
+      innodb_undo_log_truncate=ON
+      innodb_max_undo_log_size=1G
+      [client]
+      port=3306
+      socket=/opt/bitnami/mariadb/tmp/mysql.sock
+      default-character-set=UTF8
+      plugin_dir=/opt/bitnami/mariadb/plugin
+      [manager]
+      port=3306
+      socket=/opt/bitnami/mariadb/tmp/mysql.sock
+      pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
+  existingSecret: production-mariadb
+mounts:
+  public-files:
+    enabled: true
+    storage: 10G
+    mountPath: /app/web/sites/default/files
+    storageClassName: nfs-shared
+  private-files:
+    enabled: true
+    storage: 1G
+    mountPath: /app/private
+    storageClassName: nfs-shared
+varnish:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  storageBackend: file,/var/lib/varnish/varnish_storage.bin,512M
+exposeDomains:
+  tilavaraus-fi:
+    hostname: tilavaraus.helsinki.fi
+    ssl:
+      enabled: false
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+backup:
+  enabled: true
+exposeDomainsDefaults:
+  ssl:
+    enabled: false

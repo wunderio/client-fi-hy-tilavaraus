@@ -1,0 +1,6 @@
+# SOPS ciphertext (ENC[AES256_GCM,...]) under key names ending in _KEY/_TOKEN, encrypted to the
+# ArgoCD tenant key; not plaintext secrets. Fingerprints are file:rule:line.
+k8s/production/secrets/secrets.sops.yaml:config-secret-literal:8
+k8s/production/secrets/secrets.sops.yaml:config-secret-literal:10
+k8s/staging/secrets/secrets.sops.yaml:config-secret-literal:8
+k8s/staging/secrets/secrets.sops.yaml:config-secret-literal:10
