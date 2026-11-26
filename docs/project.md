@@ -40,20 +40,17 @@ The local `settings.php` case points the Optime migration at `web/modules/custom
 
 ### Remote
 
-Deploy is CircleCI, orb `silta/silta@1`, image `wunderio/silta-cicd:circleci-php8.4-node24-composer2-v1` (`.circleci/config.yml`). Jobs: `validate`, `analyze`, feature `build` / `deploy` (manual approval), `build-master` / `deploy-master`, `build-prod` / `deploy-prod`. The build runs Composer install
-and `silta/npm-install-build`. There is no PHPUnit job. GitHub Actions runs Playwright (`.github/workflows/playwright.yml`) in addition to Dependabot.
+Deploy is ArgoCD from `k8s/` (README.md, "ArgoCD deployment"); ArgoCD took the releases over from CircleCI on 2026-11-26, and `.circleci/` and the Silta deploy files were removed. GitHub Actions (`.github/workflows/build.yml`) validates, runs SonarQube, builds the php, nginx and shell images from `silta/*.Dockerfile` and commits their tags to the overlay. There is no PHPUnit job. GitHub Actions also runs Playwright (`.github/workflows/playwright.yml`) in addition to Dependabot.
 
-| Environment | Branch | Config files | Context | Role |
+| Environment | Branch | Overlay | Cluster | Role |
 | --- | --- | --- | --- | --- |
-| Feature | not `master` or `production` | `silta/silta.yml`, `silta/secrets-dev.yml` | `silta_dev_upc_hy_tilavaraus` | Review deploy. Cron is disabled with a non-date (`silta/silta.yml`). |
-| Master | `master` | those two plus `silta/silta-master.yml` | same dev context | Long-lived non-production. Cron about hourly. |
-| Production | `production` | `silta/silta.yml`, `silta/silta-prod.yml`, `silta/secrets-prod.yml` | `silta_prod_c_hy_tilavaraus` | Public site. Hostname `tilavaraus.helsinki.fi`. Autoscaling 2–5. Cron every 5 minutes. Mailpit off. Varnish on. |
-
-`silta/silta.yml` sets `projectName: Tilavaraus`, `php.drupalCoreVersion: "11"`, and `referenceData.referenceEnvironment: master`.
+| Feature | `feature/*` pull requests labelled `preview` | `k8s/feature/` | silta-dev-upc | Review deploy. |
+| Staging | `master` | `k8s/staging/` | silta-dev-upc | Long-lived non-production. Cron about hourly. |
+| Production | `production` | `k8s/production/` | silta-prod-c | Public site. Hostname `tilavaraus.helsinki.fi`. Autoscaling 2–5. Cron every 5 minutes. Mailpit off. Varnish on. |
 
 Drush aliases (`drush/sites/self.site.yml`): `local`, `master`, `prod`. `drush/Commands/SiltaAliasAlterCommands.php` fills `${REPOSITORY}` from the git remote name `client-fi-hy-tilavaraus`. `@master` uses `master-shell.client-fi-hy-tilavaraus` through `ssh.dev.silta.cloud`. `@prod` uses `production-shell.client-fi-hy-tilavaraus` through `ssh.prod.silta.cloud`.
 
-Secret files `silta/secrets-dev.yml` and `silta/secrets-prod.yml` are OpenSSL-encrypted. Key names inside them are not readable. `settings.php` reads `ENVIRONMENT_NAME`, `WARDEN_TOKEN`, `OPTIME_URL`, and `OPTIME_API_KEY`.
+Secrets are SOPS-encrypted Kubernetes Secrets in `k8s/<overlay>/secrets/`. `settings.php` reads `ENVIRONMENT_NAME`, `WARDEN_TOKEN`, `OPTIME_URL`, and `OPTIME_API_KEY`.
 
 The admin environment bar is `$settings['simple_environment_indicator']` in `settings.php`. Production is `#d4000f Production`. Other values: Feature `#5c6b73`, Master `#004984`, Stage `#e56716`, Dev `#6f42c1`, Local `#88b700`.
 
@@ -67,7 +64,7 @@ Notable contributed areas, from `composer.json` and `config/sync/core.extension.
 - Paths: `pathauto`, `redirect`, `easy_breadcrumb`.
 - Multilingual: core language plus `menu_multilingual`. Interface negotiation is URL, then user, then selected language (`config/sync/language.negotiation.yml`).
 - Workflow-adjacent: revisions on `page`. No content-moderation module is called out here as the editorial workflow.
-- Cache: Varnish is enabled in `silta/silta.yml`. `core.extension.yml` does not enable `purge` or `varnish_purger`.
+- Cache: Varnish is enabled in `k8s/production/values/drupal.yaml`. `core.extension.yml` does not enable `purge` or `varnish_purger`.
 - Auth: core login at `/user/login`. No SimpleSAMLphp, OpenID, or CAS in `composer.json`. `drupal/simplei` is the lightweight environment indicator, which matches the admin bar in `settings.php`.
 - Other: `cookieconsent` (Drupal 10 constraint, allowed through `drupal-lenient` in `composer.json`), `google_tag`, `config_split`, `config_ignore`, `config_readonly`, `stage_file_proxy`, `disable_field`.
 
@@ -184,7 +181,5 @@ Pattern: route subscriber and a form alter of core's site information form.
 
 - The live front-page node. `system.site` exports a front page, and that config is ignored on import, so the database can disagree with git.
 - Footer menu link targets. Menus `footer` and `site-footer` are placed. No `menu_link_content` config is exported.
-- The public URL of the master Silta environment. `silta/silta-master.yml` only sets cron. The Drush alias is the clue, not a confirmed browser URL.
 - Whether the Silta chart's `settings.silta.php` overrides `hash_salt`, `trusted_host_patterns`, or the database credentials. The committed `hash_salt` in `settings.php` is a placeholder. The included file is not in this repo.
-- Whether `referenceEnvironment: master` still names a Silta reference-data environment that ops expect to keep.
 - Production traffic, Optime error rates, and which equipment terms were created by editors rather than the migration. None of that is in git.

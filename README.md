@@ -34,17 +34,11 @@ Config lives in `config/sync`. Splits:
 
 `production` turns every split off. Stage file proxy on non-production environments fetches files from <https://tilavaraus.helsinki.fi>.
 
-CircleCI (`.circleci/config.yml`) validates, analyzes, builds, and deploys with the Silta orb.
+ArgoCD deploys `master` (staging) and `production` from `k8s/`. GitHub Actions (`.github/workflows/build.yml`) validates, analyzes, builds the images (Dockerfiles in `silta/`) and commits their tags. See "ArgoCD deployment".
 
-| Environment | Git branch | Silta files | CircleCI context |
-| --- | --- | --- | --- |
-| Feature | any branch except `master` and `production` | `silta/silta.yml`, `silta/secrets-dev.yml` | `silta_dev_upc_hy_tilavaraus` |
-| Master | `master` | `silta/silta.yml`, `silta/silta-master.yml`, `silta/secrets-dev.yml` | `silta_dev_upc_hy_tilavaraus` |
-| Production | `production` | `silta/silta.yml`, `silta/silta-prod.yml`, `silta/secrets-prod.yml` | `silta_prod_c_hy_tilavaraus` |
+Staging cron is hourly. Production cron is every five minutes, with autoscaling from 2 to 5 replicas. The production hostname is <https://tilavaraus.helsinki.fi>.
 
-Feature deploys wait for the `approve-deployment` job. Master cron is hourly (`silta/silta-master.yml`). Production cron is every five minutes, with autoscaling from 2 to 5 replicas. The production hostname is <https://tilavaraus.helsinki.fi>.
-
-`dev` and `stage` are `ENVIRONMENT_NAME` values in `web/sites/default/settings.php`. They select the `silta` split and an admin-bar color. They are not CircleCI branches.
+`dev` and `stage` are `ENVIRONMENT_NAME` values in `web/sites/default/settings.php`. They select the `silta` split and an admin-bar color. They are not deployed branches.
 
 Drush aliases are in `drush/sites/self.site.yml`:
 
@@ -67,14 +61,12 @@ The admin bar colors are set in `settings.php`:
 
 ## Secrets
 
-`silta/secrets-dev.yml` and `silta/secrets-prod.yml` are encrypted. Do not commit decrypted copies. Names read from the environment in `web/sites/default/settings.php`:
+Secrets are SOPS-encrypted Kubernetes Secrets in `k8s/<overlay>/secrets/` (see "ArgoCD deployment", "Secrets"). Do not commit decrypted copies. Names read from the environment in `web/sites/default/settings.php`:
 
 - `ENVIRONMENT_NAME`
 - `WARDEN_TOKEN` (production)
 - `OPTIME_URL`
 - `OPTIME_API_KEY`
-
-Decrypt and encrypt with [Silta CLI](https://github.com/wunderio/silta-cli). The CircleCI contexts above hold the keys. See [Silta's secret documentation](https://wunderio.github.io/silta/docs/encrypting-sensitive-configuration/#using-a-custom-encryption-key).
 
 ## Tests and code quality
 
@@ -132,7 +124,7 @@ _From the ArgoCD section of the [wunderio/drupal-project](https://github.com/wun
 
 ### Environments
 
-In place: CircleCI already deploys staging, production to the cluster below, and ArgoCD takes over the same release (database and volumes included) when its branch with `k8s/` is merged. CircleCI keeps deploying until then.
+In place: CircleCI used to deploy staging and production to the clusters below. ArgoCD took over the same releases (database and volumes included) on 2026-11-26, and the CircleCI configuration and Silta deploy files were removed.
 
 | Branch | ArgoCD environment | Cluster | URL |
 | --- | --- | --- | --- |
@@ -140,7 +132,7 @@ In place: CircleCI already deploys staging, production to the cluster below, and
 | `production` | production | silta-prod-c | https://production-client-fi-hy-tilavaraus.prod.silta.cloud, https://tilavaraus.helsinki.fi |
 | `feature/*` pull requests labelled `preview` | feature | silta-dev-upc | https://pr-<N>-client-fi-hy-tilavaraus.dev.silta.cloud |
 
-Each `k8s/<overlay>/values/drupal.yaml` is the environment's `silta/` files ported to ArgoCD, with the image maps laid out as in the template; the rewrites applied are listed at its top.
+Each `k8s/<overlay>/values/drupal.yaml` is the environment's former `silta/` files (in git history) ported to ArgoCD, with the image maps laid out as in the template; the rewrites applied are listed at its top.
 
 ### Drush and SSH
 
@@ -234,5 +226,5 @@ stringData:
    `silta-argocd` topic is set.
 2. The merge is the takeover: ArgoCD syncs over the release CircleCI deployed, in the same namespace, keeping its
    database and volumes. Do it in a window agreed with ops, who clear what the chart cannot adopt.
-3. Remove the CircleCI deploy jobs and `silta/` files that nothing uses any more.
+3. Remove the CircleCI deploy jobs and `silta/` files that nothing uses any more (done 2026-11-26; the Dockerfiles in `silta/` stay, `build.yml` builds from them).
 <!-- silta-migrate:end -->
