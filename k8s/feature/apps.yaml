@@ -1,0 +1,18 @@
+---
+# ArgoCD (the Silta ArgoCD platform): feature branches and pull requests are the "feature" environments on the UpCloud dev cluster
+# (silta-dev-upc).
+# From k8s/feature/apps.yaml of wunderio/drupal-project (6e220badb0a3), written by silta-migrate.
+
+# Must equal the repository name in lowercase, or rendering fails.
+namespace: client-fi-hy-tilavaraus
+
+apps:
+  - name: drupal
+    chart: drupal
+    repoURL: oci://registry.wdr.io/charts
+    version: ">=1.44.0"
+    valuesFile: values/drupal.yaml
+
+# Set to true once k8s/feature/secrets/ holds SOPS-encrypted Secrets (README.md).
+secrets:
+  enabled: false

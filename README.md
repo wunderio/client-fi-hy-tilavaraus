@@ -107,10 +107,13 @@ GrumPHP checks that the subject starts with a ticket id, a colon, and a space. T
 <!-- silta-migrate:begin -->
 ## ArgoCD deployment
 
-Projects created from this template deploy with ArgoCD; there is no CircleCI deployment.
+This project deploys with ArgoCD; there is no CircleCI deployment.
 The platform side lives in the Silta ArgoCD platform.
 
 - `k8s/staging/`: the `main`/`master` branch deploys to the `staging` environment.
+- `k8s/feature/`: a pull request from `feature/*`, `hotfix/*` or `epic/*` gets a `pr-<N>`
+  environment only while it carries the `preview` label (create the label in the repository if
+  it does not exist yet). Removing the label or closing the pull request deletes the environment.
 - `.github/workflows/build.yml` builds the images on each push to a branch with an overlay
   here, pushes them to `registry.wdr.io/<repository>/` and commits the new tags to
   `k8s/<overlay>/values/drupal.yaml`. ArgoCD deploys that commit. Other branches and pull
@@ -129,12 +132,13 @@ _From the ArgoCD section of the [wunderio/drupal-project](https://github.com/wun
 
 ### Environments
 
-CircleCI keeps deploying to GKE until the cutover.
+In place: CircleCI already deploys staging, production to the cluster below, and ArgoCD takes over the same release (database and volumes included) when its branch with `k8s/` is merged. CircleCI keeps deploying until then.
 
 | Branch | ArgoCD environment | Cluster | URL |
 | --- | --- | --- | --- |
 | `master` | staging | silta-dev-upc | https://master-client-fi-hy-tilavaraus.dev.silta.cloud |
 | `production` | production | silta-prod-c | https://production-client-fi-hy-tilavaraus.prod.silta.cloud, https://tilavaraus.helsinki.fi |
+| `feature/*` pull requests labelled `preview` | feature | silta-dev-upc | https://pr-<N>-client-fi-hy-tilavaraus.dev.silta.cloud |
 
 Each `k8s/<overlay>/values/drupal.yaml` is the environment's `silta/` files ported to ArgoCD, with the image maps laid out as in the template; the rewrites applied are listed at its top.
 
@@ -225,8 +229,10 @@ stringData:
 
 ### Cutover
 
-1. Merge to the environment's branch only once its Secrets are in `k8s/<overlay>/secrets/`.
-2. Copy the database and files to the new environment, then check the site on its temporary URL.
-3. Point DNS (or the CDN backend) for the site's domains at the UpCloud cluster.
-4. Remove the CircleCI deploy jobs and `silta/` files that nothing uses any more.
+1. Merge to the environment's branch only once its Secrets are in `k8s/<overlay>/secrets/` (the database
+   passwords taken from the running release's Secret with `migrate.py secrets --kube-context`) and the
+   `silta-argocd` topic is set.
+2. The merge is the takeover: ArgoCD syncs over the release CircleCI deployed, in the same namespace, keeping its
+   database and volumes. Do it in a window agreed with ops, who clear what the chart cannot adopt.
+3. Remove the CircleCI deploy jobs and `silta/` files that nothing uses any more.
 <!-- silta-migrate:end -->

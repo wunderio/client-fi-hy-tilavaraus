@@ -1,10 +1,10 @@
 ---
 # drupal chart values: production -> "production" on the UpCloud prod cluster.
 # Image maps as in k8s/staging/values/drupal.yaml of wunderio/drupal-project (6e220badb0a3); every other value is the site's.
-# Ported from silta/silta.yml + silta/silta-prod.yml (CircleCI, GKE). Rewrites applied by silta-migrate:
+# Ported from silta/silta.yml + silta/silta-prod.yml (CircleCI on silta-prod-c: the merge takes this release over in place). Rewrites applied by silta-migrate:
 # - images: CI builds into registry.wdr.io with a placeholder tag (its first push sets it); FROM-only Dockerfiles pinned by digest (php.image, nginx.image, shell.image)
-# - removed: the platform's per-cluster tenant-base values set them (mounts.public-files.storageClassName, mounts.private-files.storageClassName)
-# - sized from the used bytes plus 50% headroom, whole GiB, never below the size the values already set (mounts.private-files.storage, mounts.public-files.storage, mariadb.master.persistence.size)
+# - kept in place: the running release's claims were made with these storage classes, and another class would give ArgoCD new, empty volumes (mounts.public-files.storageClassName, mounts.private-files.storageClassName)
+# - kept in place as the silta config sets them (the live claims' size) (mounts.private-files.storage, mounts.public-files.storage, mariadb.master.persistence.size)
 # - values from the secrets file: secretKeyRef to Secret client-fi-hy-tilavaraus-secrets (php.env.OPTIME_API_KEY, php.env.OPTIME_URL, php.env.WARDEN_TOKEN)
 # - data service reads an existing Secret, so ArgoCD's renders do not generate new random passwords (production-mariadb)
 # - off: a letsencrypt (HTTP-01) certificate cannot issue while DNS points at GKE, and ArgoCD syncs the Deployments only once every Certificate is healthy; Fastly terminates these domains' TLS and connects to the cluster's origin name, which has the wildcard certificate. The defaults' ssl is off too: the frontend chart's ingress template merges the defaults into each domain in place, which turns a domain's `enabled: false` back on. Turn a domain's ssl back on (`enabled: true`) only when DNS points here without Fastly (exposeDomains.tilavaraus-fi.ssl, exposeDomainsDefaults.ssl.enabled)
@@ -85,6 +85,10 @@ shell:
   image:
     repository: registry.wdr.io/client-fi-hy-tilavaraus/shell
     tag: production-00000000T000000-0000000
+  # In place: the live claim production-ssh-keys2 is 1M. The platform's base values set 1Gi, and
+  # silta-shared cannot expand a claim, so the takeover's sync would fail on the resize.
+  mount:
+    storage: 1M
 projectName: Tilavaraus
 referenceData:
   referenceEnvironment: master
