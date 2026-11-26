@@ -14,7 +14,7 @@ _Note:_ Site uses Style Guide fork from here: git@github.com:wunderio/Styleguide
 #### Compiling frontend assets
 1. Setting up
     1. Go to the theme folder with `cd web/themes/custom/uh_space`.
-    2. Use Node.js 22 or newer and npm (`ddev npm` works too). The theme uses npm: `package-lock.json` is the only lockfile.
+    2. Use Node.js 22.22.3+, 24.15+ or 26+ (what cssnano 9 supports) and npm (`ddev npm` works too). The theme uses npm: `package-lock.json` is the only lockfile.
     3. Run `npm ci`.
 2. Compiling frontend assets
     1. Run `npm run watch` to build development-friendly frontend files with auto-rebuild (watch).
