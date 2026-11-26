@@ -30,16 +30,12 @@ grumphp:
     php_stan:
       run_on: '%grumphp.run_on_paths%'
     yaml_lint:
-      # OpenSSL-encrypted Silta secrets are not UTF-8 YAML. Parsing them
-      # throws a Symfony ParseException with a null snippet, which crashes
-      # GrumPHP before it can report the file.
       ignore_patterns:
         - '/vendor/'
         - '/node_modules/'
         - '/core/'
         - '/libraries/'
         - '/contrib/'
-        - 'silta/secrets-'
     json_lint:
       # yarn.lock is Yarn's own format. The json_lint task also checks
       # *.lock, which is correct for composer.lock.
