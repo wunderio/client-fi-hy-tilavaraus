@@ -58,4 +58,5 @@ grumphp:
     - Wunderio\GrumPHP\Task\YamlLint\YamlLintExtensionLoader
     - Wunderio\GrumPHP\Task\JsonLint\JsonLintExtensionLoader
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: ${EXEC_GRUMPHP_COMMAND}
+    # Hooks run on the host, which has no PHP. Run GrumPHP in the DDEV web container.
+    EXEC_GRUMPHP_COMMAND: ddev php

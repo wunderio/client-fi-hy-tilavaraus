@@ -17,7 +17,6 @@ web_environment:
     - DRUPAL_TEST_DRUPAL_ROOT=/var/www/html/web
     - TEST_BASE_URL=http://web:80
     - ENVIRONMENT_NAME=ddev
-    - EXEC_GRUMPHP_COMMAND=ddev php
 corepack_enable: false
 hooks:
     post-start:
